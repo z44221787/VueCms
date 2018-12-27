@@ -1,0 +1,23 @@
+{
+  "name": "vuecms",
+  "version": "1.0.0",
+  "description": "前端模板化构建",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/z44221787/VueCms.git"
+  },
+  "author": "Zr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/z44221787/VueCms/issues"
+  },
+  "homepage": "https://github.com/z44221787/VueCms#readme",
+  "dependencies": {
+    "avalon2": "^2.2.10",
+    "jquery": "^3.3.1"
+  }
+}
