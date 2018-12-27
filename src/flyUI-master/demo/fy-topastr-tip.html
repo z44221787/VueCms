@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content="Avalon" />
+	<meta name="keywords" content="Avalon" />
+	<title>Hello Avalon</title>
+	<link href="../css/bootstrap.min.css" rel="stylesheet" />
+	<link href="../css/style.min.css" rel="stylesheet" />
+	<link href="../css/animate.css" rel="stylesheet" />
+	<link href="../css/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+	<link href="../css/base/fy-toastr.css" rel="stylesheet" />
+</head>
+<body class="white-bg">
+<div ms-controller="vm">
+	<button class="btn btn-outline btn-primary" ms-click="@modalTip">弹窗tip</button>
+</div>
+<wbr ms-widget="{is:'fy-toastr-tip',$id:'tip'}" />
+</body>
+<script type="text/javascript" src="../support/avalon2.2.3.js"></script>
+<script type="text/javascript" src="../base/fy-toastr-tip.js"></script>
+
+<script type="text/javascript">
+	avalon.ready(function(){
+		var vm = avalon.define({
+			$id:"vm",
+			modalTip:function(){
+				var oTip=avalon.vmodels["tip"];
+				oTip.show("hehehe","2333","error");
+			}
+		});
+		avalon.scan(document.body);
+	});
+</script>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content="Avalon" />
+	<meta name="keywords" content="Avalon" />
+	<title>Hello Avalon</title>
+	<link href="../css/bootstrap.min.css" rel="stylesheet" />
+	<link href="../css/style.min.css" rel="stylesheet" />
+	<link href="../css/animate.css" rel="stylesheet" />
+	<link href="../css/base/fy-modal.css" rel="stylesheet" />
+</head>
+<body class="white-bg">
+<div ms-controller="vm">
+	<div class="input-group col-xs-3">
+		<span class="input-group-btn">
+			<button data="view" type="button" class="btn btn-white" title="预览" ms-click="@openInput(@img)">预览</button>
+		</span>
+		<input type="text" name="img" id="view" class="form-control" readonly="" ms-duplex="@img"/>
+	</div>
+	<br />
+	点击图片预览大图
+	<br />
+	<a><img width="160" height="160" title="1" src="./img-preview/1.png" ms-click="@open($event)" /></a>
+	<a><img width="160" height="160" title="2" src="./img-preview/2.jpeg" ms-click="@open($event)" /></a>
+	<a><img width="160" height="160" title="3" src="./img-preview/3.jpg" ms-click="@open($event)" /></a>
+	<a><img width="160" height="160" title="4" src="./img-preview/4.png" ms-click="@open($event)" /></a>
+	<wbr ms-widget="{is:'fy-preview',$id:'preview'}" />
+</div>
+</body>
+<script type="text/javascript" src="../support/avalon2.2.2.js"></script>
+<script type="text/javascript" src="../support/avalon-extend.js"></script>
+<script type="text/javascript" src="../base/fy-preview.js"></script>
+
+<script type="text/javascript">
+	avalon.ready(function(){
+		var vm = avalon.define({
+			$id:"vm",
+			img:"./img-preview/1.png",
+			open:function($event){
+				avalon.log($event.target);
+				var oPreview=avalon.vmodels["preview"];
+				oPreview.show($event.target);
+			},
+			openInput:function(oImg){
+				var oPreview=avalon.vmodels["preview"];
+				oPreview.show(oImg);
+			}
+		});
+		avalon.scan(document.body);
+	});
+</script>
+</html>

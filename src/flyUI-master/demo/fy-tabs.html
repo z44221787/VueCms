@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content="Avalon" />
+	<meta name="keywords" content="Avalon" />
+	<title>Hello Avalon</title>
+	<link href="../css/bootstrap.min.css" rel="stylesheet" />
+	<link href="../css/style.min.css" rel="stylesheet" />
+	<link href="../css/font-awesome/css/font-awesome.css" rel="stylesheet">
+</head>
+<body class="gray-bg" ms-controller="vm">
+	<button class="btn btn-primary" ms-click="@add">添加新tab</button>
+	<div class="tabs-container">
+		<ul class="nav nav-tabs">
+			<li ms-for="(index,tab) in @tabs" ms-class="index==@currIndex?'active':''">
+				<a ms-click="@active(index)">
+					{{tab.title}}
+					<button type="button" class="close m-l" ms-click="@del($event,index)"><span>×</span></button>
+				</a>
+			</li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane" ms-for="(index,tab) in @tabs" ms-class="index==@currIndex?'active':''">
+				<div class="panel-body">
+					<div ms-html="@tab.content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../support/avalon2.2.4.js"></script>
+<script type="text/javascript" src="../support/avalon-extend.js"></script>
+<!-- <script type="text/javascript" src="../base/fy-tabs.js"></script> -->
+<script type="text/javascript">
+	avalon.ready(function(){
+		var vm = avalon.define({
+			$id:"vm",
+			tabs:[
+					{
+						title:"This is tab",
+						content:"Lorem ipsum dolor sit amet, consectetuer adipiscing"
+					},{
+						title:"这是选项卡",
+						content:"这是内容"
+					}
+				],
+			// 是否选中
+			currIndex:-1,
+			// 选中
+			active:function(iIndex){
+				vm.currIndex=iIndex;
+			},
+			// 删除对应tab
+			del:function($event,iIndex){
+				// 阻止冒泡
+				$event.stopPropagation();
+				if(this.currIndex>=iIndex){
+					//before active tab
+					this.currIndex--;
+				}
+				avalon.Array.removeAt(vm.tabs,iIndex);
+				avalon.log(iIndex);
+				avalon.log(vm.tabs.length);
+				//if()
+				// 点击的不是当前选中的
+				//if(vm.currIndex==iIndex) return;
+				// 点击自己的时候,currIndex为下一个
+				// 如果点击的是最后一个currIndex为最后一个
+				return;
+				if(iIndex==vm.tabs.length){
+					vm.currIndex=vm.tabs.length-1;
+				}else{
+					vm.currIndex=iIndex;
+				}
+			},
+			// 新增tab,选中新增
+			add:function($event,sTitle,sContent){
+				var oTab={
+					title:sTitle||"新增tab",
+					content:sContent||"新增content"
+				};
+				this.tabs.push(oTab);
+				//avalon.Array.merge(vm.tabs,vm.addTab);
+				vm.currIndex=vm.tabs.length-1;
+				return oTab;
+			},
+			getTab:function(iIndex){
+				return iIndex<this.tabs.length?this.tabs[iIndex]:null;
+			},
+			setContent:function(iIndex,sContent){
+				var oTab=this.getTab(iIndex);
+				if(oTab) oTab.content=sContent;
+			},
+			addTab:[{
+						title:"新增tab",
+						content:"新增tab 内容内容<span>hello world</span>"
+					}]
+		});
+		avalon.scan(document.body);
+	});
+</script>
+</html>
