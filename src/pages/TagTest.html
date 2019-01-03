@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+    <script type="text/javascript" src="/node_modules/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="/node_modules/art-template/lib/template-web.js"></script>
+    <style>
+        .ms-controller {
+            display: none;
+        }
+    </style>
+</head>
+
+<script>
+    avalon.config({
+        interpolate: ['{%', '%}']
+    })
+
+    var vm = avalon.define({
+        $id: 'test',
+        data: [{
+            classname: "dd"
+        }, {
+            classname: "cc"
+        }],
+    });
+
+
+    ddddd = avalon.component('ms-classlist', {
+        template: (function () {
+            var html = [];
+            html.push(
+                "<div><slot name='classlist'></slot>"
+            );
+            html.push("</div>");
+            return html.join("");
+        }).call(this),
+        defaults: {
+            data: [{
+                classname: "dd"
+            }, {
+                classname: "cc"
+            }],
+            onInit: function (e, ee) {
+                //集合arttemplate二次开发集成组件
+                var that = this;
+                var source = e.target;
+                var sources = jQuery(e.target).find("[slot]");
+                jQuery(source).each(function (i, elem) {
+                    var htmlStr = jQuery(elem).get(0).innerHTML;
+                    var render = template.compile(htmlStr);
+                    var data = {};
+                    data.data = that.$model.data;
+                    var html = render(data);
+                    $(html).replaceAll(jQuery(elem));
+                });
+            },
+            onReady: function (e, ee) {
+                console.info("onReady");
+            },
+            onViewChange: function (e) {
+                //集合arttemplate二次开发集成组件
+                var that = this;
+                var source = e.target;
+                var sources = jQuery(e.target).find("[slot]");
+                jQuery(source).each(function (i, elem) {
+                    var htmlStr = jQuery(elem).get(0).innerHTML;
+                    var render = template.compile(htmlStr);
+                    var data = {};
+                    data.data = that.$model.data;
+                    var html = render(data);
+                    $(html).replaceAll(jQuery(elem));
+                });
+            },
+            onDispose: function () {
+                console.info("onDispose");
+            },
+        },
+        soleSlot: 'data',
+        getTemplate: function (vm, template) {
+            console.info(vm);
+            console.info(template);
+        }
+    });
+</script>
+
+<body ms-controller="test">
+    <li :for="(i,v) in data">{% @v.classname %}</li>
+    <xmp ms-widget='[{is:"ms-classlist"},@data]'>
+        <div slot='classlist'>
+            {{each data value i}}
+            <li>索引 {{i + 1}} ：{{value}}</li>
+            {{/each}}
+        </div>
+    </xmp>
+</body>
+<!-- <xmp slot="doclist" ms-widget='{is:"ms-newlist"}'></xmp> -->
+<!-- <xmp ms-widget="{is:'ms-newlist'}"></xmp> -->
+<!-- 
+<body ms-controller="test">
+    <ms-button ms-widget="@button"></ms-button>
+    <xmp ms-widget='[{is:"ms-button"},@button]'></xmp>
+    <wbr ms-widget='[{is:"ms-button"},@button]'/>
+    <template ms-widget='[{is:"ms-button"},@button]'></template>
+</body> -->
+
+</html>
