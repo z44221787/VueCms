@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+        <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+    </head>
+    <body>
+        <blockquote>
+            <div ms-controller="tree">
+                <!-- <wbr ms-widget='{is:"tree",tree: @data}' /> -->
+
+                <xmp ms-widget='{is:"test",rdata:@header}'>
+                    <table slot='header'>
+                        <tr>
+                            <td :for="el in @header" style="width:200px" >
+                                {{el}}
+                        </td>
+                        <ul>
+                            <li>{{el}}</li>
+                        </ul>
+                    </tr>
+                </xmp>
+            </div>
+
+            <script>
+                function heredoc(fn) {
+                    return fn.toString().replace(/^[^\/]+\/\*!?\s?/, '').
+                            replace(/\*\/[^\/]+$/, '').trim().replace(/>\s*</g, '><')
+                }
+                var treeID = 0;
+                // <div ms-visible="el.open" ms-html="@renderSubTree(el)">
+                         
+                //         </div>
+                avalon.component('tree', {
+                    template: heredoc(function () {
+                        /*
+                         <ul>
+                         <li ms-for="(index, el) in @tree | get(0)">{{el.text}}
+                         <span ms-click='@openSubTree(el,$event)' ms-text="@changeIcon(el)"></span>
+                        <div ms-visible="el.open" ms-html='@renderSubTree(el)'></div>
+                         </li>
+                         </ul>
+                         */
+                    }),
+                    defaults: {
+                        onInit:function(e){
+                            avalon.log(e);
+                        },
+                        tree: [],
+                        renderSubTree: function (el) {
+                            //return  el.subtree.length ? "<wbr ms-widget='{is:'tree', $id:'tree_" + (++treeID) + "', tree: el.subtree}' />" : ''
+                            return  el.subtree.length ?"<wbr ms-widget='{is:\"tree\",$id:\""+(++treeID)+"\",tree:el.subtree}' />":''
+                        },
+                        openSubTree: function (el,e) {
+                            el.open = !el.open
+                        },
+                        changeIcon: function (el) {
+                            return el.open && el.subtree.length ? '[-]' : '[+]'
+                        }
+                    }
+                })
+
+
+                avalon.define({
+                    $id: "tree",
+                    header: ['aaa','bbb','ccc'],
+                    data: [
+                        {text: "aaa", open: 1, subtree: [
+                                {text: 1111, open: 1, subtree: []},
+                                {text: 2222, open: 1, subtree: [
+                                        {text: 777, open: 1, subtree: []}
+                                    ]},
+                                {text: 3333, open: 1, subtree: [
+                                        {text: 8888, open: 1, subtree: []},
+                                        {text: 9999, open: 1, subtree: [
+                                                {text: '司徒正美', open: 1, subtree: []}
+                                            ]}
+                                    ]}
+                            ]},
+                        {text: "bbb", open: 1, subtree: [
+                                {text: 4444, open: 1, subtree: []},
+                                {text: 5555, open: 1, subtree: []},
+                                {text: 6666, open: 1, subtree: []}
+                            ]},
+                        {text: "ccc", open: 1, subtree: []},
+                        {text: "ddd", open: 1, subtree: []},
+                        {text: "eee", open: 1, subtree: [
+                                {text: 1234, open: 1, subtree: []}
+                            ]},
+                        {text: "fff", open: 1, subtree: []}
+                    ]
+
+                })
+         
+                
+                avalon.component('test',{
+                    template:heredoc(function(){
+                        /*
+                        <cc>
+                            <slot name='header'></slot>
+                        </cc>
+                        */
+                    }),
+                    defaults:{
+                        onInit:function(e){
+                            console.info(e.$model);
+                        },
+                        onReady:function(e){
+                            
+                        },
+                        rdata:[{name:"lili"},{name:"coco"}],
+                    },
+                });
+         </script>
+        </blockquote>
+
+
+    </body>
+</html>
