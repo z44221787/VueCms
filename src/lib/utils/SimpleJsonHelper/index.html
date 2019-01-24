@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="../jquery.min.js"></script>
+    <script src="simpleJsonHelper.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        var array = [{ "value": "5301", "name": "云南省", "id": 1, "pId": 0 },
+     { "value": "530101", "name": "昆明市", "id": 2, "pId": 1 },
+     { "value": "53010101", "name": "昆明市五华区", "id": 21, "pId": 2 },
+     { "value": "530101", "name": "曲靖市", "id": 3, "pId": 1 }];
+
+        var jsonObj = R_convertSimpleJsonData(array);
+        console.info(jsonObj);
+
+        var jsonObjd = R_convertSimpleJsonDataByName(array, "nodes",0);
+        console.info(jsonObjd);
+    </script>
+</body>
+</html>

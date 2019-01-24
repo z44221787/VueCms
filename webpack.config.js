@@ -1,13 +1,13 @@
 const path = require('path');
-
 module.exports = {
+  // devtool: 'eval-source-map',
   mode: 'production',
   entry: [
-    './src/pages/test.js',
+     './src/pages/test.js',
   ],
   output: {
     path: __dirname + '/src/pages/',
-    filename: 'bundle.js'
+    filename: 'outils.min.ie8.js'
   },
   module: {
     rules: [
@@ -25,6 +25,17 @@ module.exports = {
           loader: "text-loader"
         }]
       },
+      {
+        test:/\.(jsx|js)$/,
+        use:{loader:'babel-loader',
+            options:{
+            presets:[
+                "es2015","react"
+              ]
+            }
+        },
+        exclude:/node_modules/
+      }
     ]
   }
 }

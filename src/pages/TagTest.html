@@ -6,12 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+
+    <!-- <script type="text/javascript" src="/src/lib/art-templateIE8/es5-shim.min.js"></script>
+    <script type="text/javascript" src="/src/lib/art-templateIE8/es5-sham.min.js"></script>
+    <script type="text/javascript" src="/src/lib/art-templateIE8/json3.min.js"></script>
+    <script type="text/javascript" src="/node_modules/art-template/lib/template-web.js"></script> -->
+
+    <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
     <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
-    <script type="text/javascript" src="/node_modules/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="/node_modules/art-template/lib/template-web.js"></script>
+
+
     <script type="text/javascript" src="/src/lib//mmRequest/dist/mmRequest.js"></script>
     <script type="text/javascript" src="/src/lib/mmRouter/dist/mmRouter.js"></script>
-    <script type="text/javascript" src="/src/lib/mmDeferred/mmPromise.js"></script>
+    <script type="text/javascript" src="/src/lib/linq.js_ver2.2.0.2/linq.js"></script>
+
+    <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/GetRequest.js"></script>
+
+
+    <!-- <script type="text/javascript" src="/src/lib/mmDeferred/mmPromise.js"></script> -->
     <style>
         /* 解决页面初始化加载出现花括号 */
         .ms-controller {
@@ -23,12 +36,13 @@
 <script>
     /*调整{{ }}模式为{% %}，兼容art-template*/
     avalon.config({
-        interpolate: ['{%', '%}']
+        // interpolate: ['{%', '%}'],
+        debug: false
     });
 
-    avalon.getJSON("./pig.json", function (data) {
-        console.info(data);
-    });
+    // avalon.getJSON("./pig.json", function (data) {
+    //     console.info(data);
+    // });
 
     var vm = avalon.define({
         $id: 'test',
@@ -60,100 +74,78 @@
     })
     avalon.router.add("/ddd/:ddd/:eee", function (a) { //:ddd为参数
         vm.currPath = this.path
-        console.log(this.query)
-        console.log(this.params)
+        //console.log(this.query)
+        //console.log(this.params)
     })
     //启动路由监听
     avalon.history.start({
         root: "/mmRouter"
     })
-    // avalon.scan(document.body);
-    avalon.component('ms-class', {
-        template: (function () {
-            var html = [];
-            html.push(
-                "<div><slot name='classlist'></slot>"
-            );
-            html.push("</div>");
-            return html.join("");
-        }).call(this),
-        defaults: {
-            data: [{
-                classname: "dd"
-            }, {
-                classname: "cc"
-            }],
-            onInit: function (e, ee) {
-                //集合arttemplate二次开发集成组件
-                var that = this;
-                var source = e.target;
-                var sources = jQuery(e.target).find("[slot]");
-                jQuery(source).each(function (i, elem) {
-                    var htmlStr = jQuery(elem).get(0).innerHTML;
-                    var render = template.compile(htmlStr);
-                    var data = {};
-                    data.data = that.$model.data;
-                    var html = render(data);
-                    $(html).replaceAll(jQuery(elem));
-                });
-            },
-            onReady: function (e, ee) {
-                console.info("onReady");
-            },
-            onViewChange: function (e) {
-                //集合arttemplate二次开发集成组件
-                var that = this;
-                var source = e.target;
-                var sources = jQuery(e.target).find("[slot]");
-                jQuery(source).each(function (i, elem) {
-                    var htmlStr = jQuery(elem).get(0).innerHTML;
-                    var render = template.compile(htmlStr);
-                    var data = {};
-                    data.data = that.$model.data;
-                    var html = render(data);
-                    $(html).replaceAll(jQuery(elem));
-                });
-            },
-            onDispose: function () {
-                console.info("onDispose");
-            },
-        },
-        soleSlot: 'data',
-        getTemplate: function (vm, template) {
-            console.info(vm);
-            console.info(template);
-        }
-    });
+
+
+    //格式化html标记
+    function heredoc(fn) {
+        return fn.toString().replace(/^[^\/]+\/\*!?\s?/, '').
+        replace(/\*\/[^\/]+$/, '').trim().replace(/>\s*</g, '><')
+    }
+
+
+    //向指定位置插入字符
+    function insertStr(soure, start, newStr) {
+        return soure.slice(0, start) + newStr + soure.slice(start)
+    }
 
     //组件嵌套(栏目信息和文章信息)
-    var classInfo, docInfo;
+    var channelInfo, docInfo;
 
     //获取栏目组件
     avalon.component("ms-channel", {
-        template: (function () {
-            var htmlArray = new Array();
-            htmlArray.push("<div id='parent'><slot name='channel'></slot></div>");
-            return htmlArray.join("");
-        }).call(this),
+        template: heredoc(function () {
+            /*
+            <div>
+                <slot name='channel'></slot>
+            </div>
+             */
+        }),
         defaults: {
-            ids: "",
+            data: [],
+            ids: "", //栏目名称（栏目名必须唯一），可以逗号分隔
             onInit: function (e) {
                 //根据栏目编号获取栏目信息
-                // avalon.serialize(element)//序列化
-
-                //集合arttemplate二次开发集成组件
                 var that = this;
-                var source = e.target;
-                var sources = jQuery(e.target).find("slot[name='channel']");
-                jQuery(source).each(function (i, elem) {
-                    var htmlStr = jQuery(elem).get(0).innerHTML;
-                    var render = template.compile(htmlStr);
-                    var data = {};
-                    data.data = that.$model.data;
-                    var html = render(data);
-                    $(html).replaceAll(jQuery(elem));
+                var ethat = e;
+                jQuery.support.cors = true;
+                jQuery.ajax({
+                    type: "get",
+                    url: "http://localhost/ApiService/GetClassListByName",
+                    data: "classNames=" + that.ids,
+                    dataType: "jsonp",
+                    async: false,
+                    success: function (data) {
+                        if (data.state == "success") {
+                            that.data = data.list;
+                            var uuid = UUID();
+                            jQuery(ethat.target).data("vm", vm); //用于作用域传递
+                            jQuery(e.target).attr("ms-controller", uuid);
+                            var newhtml = "";
+                            // if (jQuery(e.target).html().toString().indexOf("<template") >-1) {
+                            //     //1、栏目组件内部存在"ms-documents"获取文章列表组件
+                            //     //2、栏目组件内部存在"ms-documents"获取文章列表组件
+                            //     var newhtml=insertStr(jQuery(e.target).html().toString(),jQuery(e.target).html().toString().indexOf("<ms-documents>")+"<template>".length, "<!--");
+                            //     newhtml=insertStr(newhtml,newhtml.indexOf("</template>")-1, "-->");
+                            // }
+                            //var  html =newhtml.replace(/^<!--*|-->*$/g,'').trim().replace(/>\s*</g, '><');
+                            //html=jQuery(html).attr("ms-widget",'{classData:@data}').get(0).outerHTML;
+                            //jQuery(e.target).html(html);
+                            var vm = avalon.define({
+                                $id: uuid,
+                                data: data.list,
+                            });
+                            avalon.scan(e.target);
+                        }
+                    }
                 });
-                parent = e.vmodel;
+
             },
             onReady: avalon.noop,
             onViewChange: avalon.noop,
@@ -162,22 +154,175 @@
         soleSlot: "channel"
     });
 
-    avalon.component("ms-document", {
-        template: (function () {
-            var htmlArray = new Array();
-            htmlArray.push("<slot name='doc'></slot>");
-            return htmlArray.join("");
-        }).call(this),
+    avalon.component("ms-documents", {
+        template: heredoc(function () {
+            /*
+            <div>
+            <slot name='doc'>正在加载数据....</slot>
+            </div>
+            */
+        }),
         defaults: {
+            classData: null,
+            doc: "正在加载数据....",
+            documentsData: null,
             onInit: function (e) {
-                child = e.vmodel;
-                console.info("子级节点输出" + parent);
+                var classData = this.classData.$model
+                var that = this;
+                var ethat = e;
+                if (classData.length > 0) {
+                    var pdata = classData;
+                    var classinfos = Enumerable.From(pdata).Select("x=>x.F_Id").ToArray();
+                    //处理栏目，采用逗号分隔
+                    var classIds = classinfos.join(",");
+                    //处理文档
+                    jQuery.ajax({
+                        type: "get",
+                        url: "http://localhost/ApiService/GetDocListByClassId",
+                        data: {
+                            rows: 15,
+                            page: 1,
+                            classId: classIds
+                        },
+                        dataType: "json",
+                        async: false,
+                        success: function (data) {
+                            if (data.state == "success") {
+                                that.data = data.list;
+                                var uuid = UUID();
+                                jQuery(ethat.target).data("vm", vm); //用于作用域传递
+                                jQuery(e.target).attr("ms-controller", uuid);
+                                var html = jQuery(e.target).html().toString().replace('<!--',
+                                    '').replace('-->', '').trim().replace(/>\s*</g, '><')
+                                jQuery(e.target).html(html);
+                                var vm = avalon.define({
+                                    $id: uuid,
+                                    documentsData: data.list,
+                                });
+                                avalon.scan(e.target);
+                            }
+                        }
+                    });
+                }
             },
             onReady: avalon.noop,
             onViewChange: avalon.noop,
             onDispose: avalon.noop
         },
         soleSlot: "doc"
+    });
+
+    avalon.component("ms-ajax", {
+        template: '<dd><slot name="ajax"><slot></dd>',
+        defaults: {
+            url: "",
+            type: "get",
+            dataType: "json",
+            uuid: UUID(),
+            data: null,
+            pdata: null, //父级传递下来的数据集合
+            reName: "", //重命名回调数据名,解决ajax组件嵌套时作用域数据名重复
+            beforeSend: null,
+            success: null,
+            async: true,
+            onInit: function (e) {
+                jQuery(e.target).prepend('<div id="load' + this.uuid +
+                    '" style="position: font-size: 14px;static;display: block;width: 180px;padding: 5px 5px 5px 50px;text-align: left;line-height: 27px;font-weight: bold;z-index: 2001;background: white url(../../src/source/images/loading.gif) no-repeat 40px 0px;">&nbsp;&nbsp;&nbsp;</div>'
+                );
+                if (this.beforeSend) {
+                    eval(this.beforeSend + "()");
+                }
+            },
+            onReady: function (e) {
+               // console.info("avalon2数据挂载开始");
+                var that = this;
+                jQuery(e.target).attr("ms-controller", that.uuid);
+                //avalonAjax获取数据
+
+                //如果存在父级数据，则将父级数据附加到data中继续传递给后台服务使用
+                // if (that.pdata != null) {
+                //     that.data.pdata = that.pdata;
+                // }
+                jQuery.ajax({
+                    type: that.type,
+                    url: that.url,
+                    data:that.$model.data,
+                    dataType: that.dataType,
+                    cache: false,
+                    async: that.async, //默认异步处理
+                    success: function (data, ee, eee) {
+                        jQuery(e.target).find("#load" + that.uuid).remove(); //移除
+                        var options = {
+                            $id: that.uuid,
+                        };
+                        //属性拷贝
+                        for (var pro in that.$model) {
+                            if (pro != "onInit" && pro != "onReady" && pro != "onViewChange" &&
+                                pro != "onDispose") {
+                                options[pro] = that.$model[pro];
+                            }
+                        }
+                        //当前组件转化为控制器，方便作用域控制
+                        jQuery(e.target).attr("ms-controller", options.uuid);
+
+                        var html = e.target.innerHTML.toString().replace(/^<!--*|-->*$/g, '').trim()
+                            .replace(/>\s*</g, '><');
+                        jQuery(e.target).html(html);
+                        if (that.reName != "") {
+                            options[that.reName] = data;
+                        } else {
+                            options["data"] = data;
+                        }
+                        //判断当前组件中是否存在widget属性的元素,如果存在则第一个，并重新组装为子组件，传递上级作用域数据给当前子组件
+                        var widget_Childs = jQuery(e.target).find("div[widget]");
+                        var templateId = UUID();
+                        //1、重新写入组件标签，替换当前内容
+                        for (var i = 0; i < widget_Childs.length; i++) {
+                            //渲染新标签
+                            var template = jQuery("<template></template>");
+                            var attr = jQuery(widget_Childs[i]).attr("widget");
+                            //添加随机Id编号
+                            template.attr("id", templateId);
+                            //循环属性
+                            if (that.reName != "") {
+                                attr = insertStr(attr, attr.lastIndexOf("}"), ",pdata:@" + that.reName + ""); //传递父级回调数据给子组件
+                            } else {
+                                attr = insertStr(attr, attr.lastIndexOf("}"), ",pdata:@data"); //传递父级回调数据给子组件
+                            }
+                            template.attr("ms-widget", attr);
+                            template.html(jQuery(widget_Childs[i]).html());
+                            jQuery(widget_Childs[i]).replaceWith(template);
+                        }
+                        //2、扫描、激活组件
+                        var vmAjax = avalon.define(options);
+                        jQuery(e.target).data("vm", vmAjax); //用于作用域传递
+                        avalon.scan(e.target);
+                        //最后执行成功回调函数
+                        if (ee === "success") {
+                            if (that.success) {
+                                try {
+                                    var jdata = JSON.stringify(data);
+                                    that.success = that.success + "(" + jdata + ",'" + ee +
+                                        "')";
+                                } catch (msg) {
+                                  //  console.info("data被强制转换为字符串处理！");
+                                    var jdata = data.toString();
+                                    that.success = that.success + "('" + jdata + "','" + ee +
+                                        "')";
+                                }
+                                eval(that.success);
+                            } else {
+                               // console.info("ajax回调成功");
+                            }
+                        }
+                    },
+                });
+
+            },
+            onViewChange: avalon.noop,
+            onDispose: avalon.noop,
+        },
+        soleSlot: "ajax"
     });
 </script>
 
@@ -188,7 +333,7 @@
         <p><a href='#!/bbb'>点我</a></p>
         <p><a href='#!/ccc'>点我</a></p>
         <p><a href='#!/ddd/111/222'>点我</a></p>
-        <p>{%currPath%}</p>
+        <p>{{currPath}}</p>
         <br />
         <!-- <li :for="(i,v) in data">{% @v.classname %}</li>
             <xmp ms-widget='[{is:"ms-class"},@data]'>
@@ -199,33 +344,47 @@
     </div>
 
     <h1>avalon2+组件组合art-template，新闻cms系统组件（获取栏目组件,获取新闻内容组件,组件嵌套）</h1>
-    <ms-parent></ms-parent>
-    <xmp :widget='{is:"ms-channel", $id:"parent",ids:"通知公告"}'>
-        <ul>
-            <ms-document :widget='{top:7}'>
-            </ms-document>
-        </ul>
+    <!-- 
+    <xmp ms-widget='{is:"ms-template",url:"../index.html"}'></xmp>
+
+    <xmp ms-widget='{is:"ms-channels",ids:{owner:classIds},child:true}'>
+        <template ms-widget='{is:"ms-documents",startpos:0,top:15}'>
+            <xmp ms-widget='{is:"ms-page"}'></xmp>
+        </template>
+    </xmp> -->
+
+    <script>
+        function be() {
+            //console.info("开始初始化 ajax前");
+        }
+
+        function suc() {
+           // console.info("ajax完成");
+        }
+    </script>
+
+    <div>
+        <h2>通知公告栏目/新闻栏目组件嵌套</h2>
+    </div>
+    <xmp ms-widget='{is:"ms-ajax",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"通知公告,"},reName:"classData",dataType:"jsonp"}'>
+        <div widget='{is:"ms-ajax", url:"http://localhost/ApiService/GetDocListByClassId",data:{rows: 15,page: 1,classId:@classData.list[0].F_Id},reName:"docData",dataType:"jsonp"}'>
+            <!--
+            <ul ms-for="(i v) in docData.list">
+                <li>{{@v.F_Topic}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
+            </ul>
+            -->
+        </div>
+
     </xmp>
 
-    <xmp :widget='{is:"ms-channel", $id:"parent",ids:"图片新闻"}'>
-        <ul>
-            <ms-document :widget='{top:7}'>
-            </ms-document>
+
+       <!--
+        <ul ms-for="(i v) in classData.list">
+            <li>{{@v.F_ClassName}}</li>
         </ul>
-    </xmp>
+        -->
+
+    <!-- <xmp ms-widget='{is:"ms-template",url:"../index.html"}'></xmp> -->
 </body>
-
-
-
-
-<!-- <xmp slot="doclist" ms-widget='{is:"ms-newlist"}'></xmp> -->
-<!-- <xmp ms-widget="{is:'ms-newlist'}"></xmp> -->
-<!-- 
-<body ms-controller="test">
-    <ms-button ms-widget="@button"></ms-button>
-    <xmp ms-widget='[{is:"ms-button"},@button]'></xmp>
-    <wbr ms-widget='[{is:"ms-button"},@button]'/>
-    <template ms-widget='[{is:"ms-button"},@button]'></template>
-</body> -->
 
 </html>

@@ -1,0 +1,81 @@
+<script>
+    function getOpenTag(str, callBackArray) {
+        var i = str.indexOf('<!--'); //处理注释节点
+        var l = str.indexOf('-->');
+        if (l === -1) {
+            thow('注释节点没有闭合 ' + str.slice(i, 100));
+        } else {
+            //判断当前节点是否属于avalon2的注释节点,属于则不记录入node
+            var node = {
+                nodeName: '#comment',
+                nodeValue: str.slice((i + 4), l),
+                nodeSourceValue: str.slice(i, l + 3),
+                start: i + 4,
+                end: l
+            };
+            if (node.nodeSourceValue.indexOf("--ms") == -1 && node.nodeSourceValue.indexOf("-end") == -1 && node.nodeSourceValue
+                .indexOf("--for") == -1) {
+                callBackArray.push(node);
+            }
+            //移除当前位子字符串
+            str = str.substr(l + 3, str.length);
+        }
+        if (str.indexOf('<!--') != -1) {
+            getOpenTag(str, callBackArray)
+        }
+    };
+
+
+    avalon.component("ms-test", {
+        template: "<div><slot name='test'></slot></div>",
+        defaults: {
+            data: [{
+                "name": "zz"
+            }, {
+                "name": "dd"
+            }],
+            onInit: function (e) {
+                console.info(e);
+            },
+            onReady: function (e) {
+                var that = this;
+                var options = {
+                    $id: "",
+                };
+                //属性拷贝
+                for (var pro in that.$model) {
+                    if (pro != "onInit" && pro != "onReady" && pro !=
+                        "onViewChange" &&
+                        pro != "onDispose") {
+                        options[pro] = that.$model[pro];
+                    }
+                }
+                //当前组件转化为控制器，方便作用域控制
+                var uuid = UUID();
+                jQuery(e.target).attr("ms-controller", uuid);
+                options["$id"] = uuid;
+                var vmAjax = avalon.define(options);
+                //将注释行存放于nodes中
+                var nodes = [];
+                getOpenTag(e.target.innerHTML.toString(), nodes);
+                var html = e.target.innerHTML;
+                if (nodes.length >= 1) {
+                    //处理注释节点--全部替换为dom
+                    for (var node in nodes) {
+                        html = html.replace(nodes[node].nodeSourceValue, nodes[node].nodeValue)
+                    }
+                }
+                jQuery(e.target).html(html);
+                avalon.scan(e.target);
+            },
+            onViewChange: avalon.noop,
+            onDispose: avalon.noop,
+        },
+        soleSlot: "test"
+    });
+
+
+    function insertStr(soure, start, newStr) {
+        return soure.slice(0, start) + newStr + soure.slice(start);
+    };
+</script>

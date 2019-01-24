@@ -1,0 +1,39 @@
+<cc ms-controller="755b3109b750488b916646004770c353" jQuery1830042287513095032536="3">
+    <UL ms-for="(i v) in data.list">
+        <LI>
+            <H1><A target=_blank ms-css="{width:data.list.length}" ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}">{{@v.F_ClassName}}</A></H1>
+        </LI>
+    </UL>
+    <XMP id=ff8fe5da6dfb46e58a9cb74bd19189eb ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list[0].F_Id},dataType:"jsonp",reName:"docData",pdata:@data}'
+        jQuery1830042287513095032536="1">
+        <H1>
+            <!-- 
+                  共有{{docData.list.length}}篇文章
+                 <ul ms-for="(i v) in docData.list">
+                    <li>{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
+                 </ul> -->
+        </H1>
+        <DIV type="widget" widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></DIV>
+    </XMP>
+</cc>
+
+
+<cc ms-controller="3bc95777dfe54910aaa8e8c157bb0ca8" jQuery183007499729296701501="3">
+
+    <UL ms-for="(i v) in data.list">
+        <LI>
+            <H1><A target=_blank ms-css="{width:data.list.length}" ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}">{{@v.F_ClassName}}</A></H1>
+        </LI>
+    </UL>
+    <XMP id=a9fdb5ea057241629bd1d3e2b71fba82 ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list[0].F_Id},dataType:"jsonp",reName:"docData",pdata:@data}'
+        jQuery183007499729296701501="1">
+        <H1>
+            <!-- 
+                  共有{{docData.list.length}}篇文章
+                 <ul ms-for="(i v) in docData.list">
+                    <li>{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
+                 </ul> -->
+        </H1>
+        <DIV type="widget" widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></DIV>
+    </XMP>
+</cc>
