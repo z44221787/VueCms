@@ -1,47 +1,119 @@
 例子：----------------------------------------
- <script type="text/javascript">
-        //事件处理 -解决方案
-        function msg(e,ee){
-            alert("您当前点击了栏目编号为"+e.F_Id);
-            jQuery(ee.target).css("color","red");
+    <!-- 基类 -->
+    <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+    <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+    <!-- 帮助类 -->
+    <script type="text/javascript" src="/src/pages/outils.min.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+    <!-- 分页 -->
+    <script type="text/javascript" src="/src/lib/layui/dist/layui.js"></script>
+    <link rel="stylesheet" href="/src/lib/layui/dist/css/layui-page.css">
+
+    <style>
+        /* 解决页面初始化加载出现花括号 */
+        .ms-controller {
+            display: none;
+        }
+
+        ul
+        {
+            list-style-type: none;
+            padding: 10px;
+            margin: 10px;
+        }
+        ul li
+        {
+            background-repeat: no-repeat;
+            background-position: 0px 5px; 
+            padding-left: 14px; 
+        }
+
+
+        .hover{
+            color: red
+        }
+    </style>
+
+
+ //事件处理 -解决方案
+    <script>
+        function msg(e, ee) {
+            alert("您当前点击了栏目编号为" + e.F_Id);
+            jQuery(ee.target).css("color", "red");
         }
 
         //处理传递的数据,然后再继续传递--------数据组件 流转过程如果需要修改传递数据 解决方案
         avalon.filters.idsOp = function (obj) {
-            var ids=Enumerable.From(obj.data.classId).Select("x=>x.F_Id").ToArray().join(",");
-            obj.data.classId=ids;
+            var ids = Enumerable.From(obj.data.classId).Select("x=>x.F_Id").ToArray().join(",");
+            obj.data.classId = ids;
             return obj;
         }
-</script>
+    </script>
 
-<xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"药监动态,行业动态"},dataType:"jsonp"}'>   
-       <!-- 
-       <ul id='ceshi' ms-for="(i v) in data.list">
-            <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
-        </ul>-->
-            <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:5,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
-        <!-- <h1>
-          共有{{docData.list.length}}篇文章
+    <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
+        <!--  异步加载数据(手动传递数据)
+            <h2>
+            <div>
+               栏目： <span ms-for="(i v) in data.list"><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" target="_blank">{{@v.F_ClassName}}&nbsp;</a></span>
+    -->
+        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
+        <!-- 
+              <span style="padding-left:10px">当前显示栏目{{docData.list.length}}篇文章<span>
+                </div>    
+            </h2>
+         <h3>
          <ul ms-for="(i v) in docData.list">
             <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
          </ul> 
-        </h1> -->  
+        </h3> -->
             <div type='widget' widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></div>
         </div>
-</xmp>
+    </xmp>
+
+    ---------------------------------------------------------------------------------------------
+    <br/>
+
+    <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"owner"},dataType:"jsonp"}'>
+        <!--  整页刷新加载(url传递数据)
+        <h2>
+            <div>
+              栏目：  <span ms-for="(i v) in data.list"><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" target="_blank" ms-html="@v.F_ClassName+'&nbsp;'"></a></span>
+    -->
+        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:"owner",classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
+          <!-- 
+              <span style="padding-left:10px">当前显示栏目{{docData.list.length}}篇文章<span>
+                </div>    
+            </h2>
+         <h3>
+         <ul ms-for="(i v) in docData.list">
+            <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
+         </ul> 
+        </h3> -->
+            <div type='widget' widget='{is:"ms-page",count:@docData.records,rows:2}'></div>
+        </div>
+    </xmp>
+
+
 例子：----------------------------------------
 
 一、数据组件注意事项---请仔细阅读理解（看例子理解）
     1、数据组件中如果使用模板引擎，需要使用注释标签包裹，数据组件可以无限制嵌套，一个数据组件中可以使用一个UI组件，如例子
+
     2、模板语法中对于变量名建议添加@前缀
+
     3、模板引擎指令，需要使用双引号包裹，值用单引号,   组件指令 widget不限制
+
+    4、数据组件 传递的data数据中某属性来源与url则对应属性值改为owner 如classNames，表示将url参数classNames传递给接口服务
+    <xmp ms-widget='{is:"ms-data",url:"http://xxx.xx.xx/ApiService/XXXX",data:{classNames:"owner"},dataType:"jsonp"}
+
+    5、模板引擎注释体html标签，一旦使用指令或表达式，不允许跨数据组件，必须在同一个数据组件闭合，如果没有使用指令或表达式，允许跨域多个数据组件闭合，详细可看例子
 
 二、数据组件中使用模板引擎指令
     1、插值表达式 {{@msg}} <div>{{@msg}}</div>
 
-    2、条件判断指令 ms-if   <div ms-if="1=1"></div>,条件判断指令会根据条件情况判断是否加载包裹的标签体
+    2、条件判断指令 ms-if   <div ms-if="1==1"></div>,条件判断指令会根据条件情况判断是否加载包裹的标签体
 
-    3、显示隐藏指令 ms-visible <div ms-visible="1=1"></div>,显示隐藏指令是根据条件情况利用display：block、none显示隐藏标签体
+    3、显示隐藏指令 ms-visible <div ms-visible="1==1"></div>,显示隐藏指令是根据条件情况利用display：block、none显示隐藏标签体
 
     4、属性指令 ms-attr <div ms-attr="{id:@id}"></div> , 语法类同 jquery 语法
 

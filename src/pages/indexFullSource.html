@@ -53,7 +53,7 @@
 
     <script type="text/javascript">
         avalon.config({
-            debug: true
+            debug: false
         });
 
         //启动路由监听
@@ -89,7 +89,7 @@
                     avalon.mix(queryData, that.$model.data); //单纯拷贝查询对象
                     //循环属性，判断属性存在才将属性拷贝到vm和$model中
                     for (var p in urlQueryObj) {
-                        if (typeof that.data[p] != "undefined" && that.data[p].toLowerCase() == "owner") {
+                        if (typeof that.data[p] != "undefined" && that.data[p].toString().toLowerCase() == "owner") {
                             that.data[p] = urlQueryObj[p];
                             queryData[p] = urlQueryObj[p];
                         }
@@ -143,8 +143,7 @@
                                 };
                                 //兼容IE8拷贝
                                 for (var p in urlQueryObj) {
-                                    if (typeof copyData.pParams.data[p] != "undefined" &&
-                                        copyData.pParams.data[p].toLowerCase() == "owner") {
+                                    if (typeof copyData.pParams.data[p] != "undefined" && copyData.pParams.data[p].toString().toLowerCase() == "owner") {
                                         copyData.pParams.data[p] = urlQueryObj[p];
                                     }
                                 }
@@ -348,9 +347,8 @@
                         var laypage = layui.laypage,
                             layer = layui.layer;
                         //总页数低于页码总数
-                        var limitRows = that.rowsName != null ? that.changData.pParams.$model.data[
-                            that.rowsName] : that.changData.pParams.$model.data.rows;
                         if (that.changData != null) {
+                            var limitRows = that.rowsName != null ? that.changData.pParams.$model.data[that.rowsName] : that.changData.pParams.$model.data.rows;
                             laypage.render({
                                 elem: e.target,
                                 skip: true, //是否开启跳页
@@ -413,8 +411,30 @@
                                 }
                             });
                         } else {
-                            //当不存在changeData的情况,分页组件不结合数据组件使用Ajax处理，使用整页刷新方式
-
+                            //当不存在changeData的情况,分页组件不结合数据组件使用Ajax处理，使用整页刷新方式，获取当前页面url
+                            laypage.render({
+                                elem: e.target,
+                                skip: true, //是否开启跳页
+                                first: "<<",
+                                last: ">>",
+                                limit:that.rows,
+                                count: that.count, //数据总数
+                                curr: function(){ //通过url获取当前页，也可以同上（pages）方式获取
+                                    var page = location.search.match(/page=(\d+)/);
+                                    return page ? page[1] : 1;
+                                }(), 
+                                jump: function(e, first){ //触发分页后的回调
+                                    if(!first){ //一定要加此判断，否则初始时会无限刷新
+                                        //先去除当前href所有参数，然后重新组装，并且拼接上页码值
+                                        var pageName=that.pageName==null?"page":that.pageName;
+                                        var _locationHash=location.hash;
+                                        var _urlSearchObj = outils.parseQueryString(location.search);
+                                        _urlSearchObj[pageName]=e.curr;
+                                        var _urlParams=outils.stringfyQueryString(_urlSearchObj);
+                                        location.href ="?"+_urlParams+_locationHash;
+                                    }
+                                }
+                            })
                         }
                     })
                 }
@@ -449,24 +469,52 @@
         }
     </script>
 
-    <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"药监动态,通知公告"},dataType:"jsonp"}'>
+    <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
+        <!--  异步加载数据(手动传递数据)
+            <h2>
+            <div>
+               栏目： <span ms-for="(i v) in data.list"><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" target="_blank">{{@v.F_ClassName}}&nbsp;</a></span>
+    -->
+        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
         <!-- 
-       <ul id='ceshi' ms-for="(i v) in data.list">
-            <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
-        </ul>-->
-        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:5,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
-            <!-- <h1>
-          共有{{docData.list.length}}篇文章
+              <span style="padding-left:10px">当前显示栏目{{docData.list.length}}篇文章<span>
+                </div>    
+            </h2>
+         <h3>
          <ul ms-for="(i v) in docData.list">
             <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
          </ul> 
-        </h1> -->
+        </h3> -->
             <div type='widget' widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></div>
         </div>
     </xmp>
 
-    <input ms-duplex="@count" type="input" value=""/>
-    <input ms-on-click="@c" type="button" value="加法计算"/>
+    ---------------------------------------------------------------------------------------------
+    <br/>
+
+    <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"owner"},dataType:"jsonp"}'>
+        <!--  整页刷新加载(url传递数据)
+        <h2>
+            <div>
+              栏目：  <span ms-for="(i v) in data.list"><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" target="_blank" ms-html="@v.F_ClassName+'&nbsp;'"></a></span>
+    -->
+        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:"owner",classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
+          <!-- 
+              <span style="padding-left:10px">当前显示栏目{{docData.list.length}}篇文章<span>
+                </div>    
+            </h2>
+         <h3>
+         <ul ms-for="(i v) in docData.list">
+            <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
+         </ul> 
+        </h3> -->
+            <div type='widget' widget='{is:"ms-page",count:@docData.records,rows:2}'></div>
+        </div>
+    </xmp>
+
+
+  
+
 </body>
 
 </html>
