@@ -469,51 +469,40 @@
         }
     </script>
 
-    <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
-        <!--  异步加载数据(手动传递数据)
-            <h2>
-            <div>
-               栏目： <span ms-for="(i v) in data.list"><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" target="_blank">{{@v.F_ClassName}}&nbsp;</a></span>
-    -->
-        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
+<xmp ms-widget='{is:"ms-data",url:"http://172.24.248.249/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
+    <!-- 
+   <ul id='ceshi' ms-for="(i v) in data.list">
+        <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
+    </ul>-->
+    <div type='widget' widget='{is:"ms-data",url:"http://172.24.248.249/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
+        <!-- <h1>
+      共有{{docData.list.length}}篇文章
+     <ul ms-for="(i v) in docData.list">
+        <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
+     </ul> 
+    </h1> -->
+        <div type='widget' widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></div>
+    </div>
+</xmp>
+
+    
+    <xmp ms-widget='{is:"ms-data",url:"http://172.24.248.249/ApiService/GetClassListByName",data:{classNames:"通知公告"},dataType:"jsonp"}'>
         <!-- 
-              <span style="padding-left:10px">当前显示栏目{{docData.list.length}}篇文章<span>
-                </div>    
-            </h2>
-         <h3>
+       <ul id='ceshi' ms-for="(i v) in data.list">
+            <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
+        </ul>-->
+        <div type='widget' widget='{is:"ms-data",url:"http://172.24.248.249/ApiService/GetDocListByClassId",data:{rows:2,page:"owner",classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
+            <!-- <h1>
+          共有{{docData.list.length}}篇文章
          <ul ms-for="(i v) in docData.list">
             <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
          </ul> 
-        </h3> -->
-            <div type='widget' widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></div>
-        </div>
-    </xmp>
-
-    ---------------------------------------------------------------------------------------------
-    <br/>
-
-    <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"owner"},dataType:"jsonp"}'>
-        <!--  整页刷新加载(url传递数据)
-        <h2>
-            <div>
-              栏目：  <span ms-for="(i v) in data.list"><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" target="_blank" ms-html="@v.F_ClassName+'&nbsp;'"></a></span>
-    -->
-        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:"owner",classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
-          <!-- 
-              <span style="padding-left:10px">当前显示栏目{{docData.list.length}}篇文章<span>
-                </div>    
-            </h2>
-         <h3>
-         <ul ms-for="(i v) in docData.list">
-            <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
-         </ul> 
-        </h3> -->
-            <div type='widget' widget='{is:"ms-page",count:@docData.records,rows:2}'></div>
+        </h1> -->
+               <div type="widget" widget='{is:"ms-page",count:@docData.records,rows:2}'></div>
         </div>
     </xmp>
 
 
-  
 
 </body>
 
