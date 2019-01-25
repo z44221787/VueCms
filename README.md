@@ -1,13 +1,19 @@
 例子：----------------------------------------
     <!-- 基类 -->
-    <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
-    <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
-    <!-- 帮助类 -->
-    <script type="text/javascript" src="/src/pages/outils.min.js"></script>
-    <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+<script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+
+<script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+
+<!-- 帮助类 -->
+<script type="text/javascript" src="/src/pages/outils.min.js"></script>
+
+<script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+
     <!-- 分页 -->
-    <script type="text/javascript" src="/src/lib/layui/dist/layui.js"></script>
-    <link rel="stylesheet" href="/src/lib/layui/dist/css/layui-page.css">
+<script type="text/javascript" src="/src/lib/layui/dist/layui.js"></script>
+
+<link rel="stylesheet" href="/src/lib/layui/dist/css/layui-page.css">
+
 
 <style>
         /* 解决页面初始化加载出现花括号 */
@@ -21,6 +27,7 @@
             padding: 10px;
             margin: 10px;
         }
+
         ul li
         {
             background-repeat: no-repeat;
@@ -29,27 +36,36 @@
         }
 
 
+
         .hover{
             color: red
         }
+
 </style>
+
 
 
  //事件处理 -解决方案
 <script>
-function msg(e, ee) {
+
+function msg(e, ee) 
+{
     alert("您当前点击了栏目编号为" + e.F_Id);
     jQuery(ee.target).css("color", "red");
 }
 
-        //处理传递的数据,然后再继续传递--------数据组件 流转过程如果需要修改传递数据 解决方案
-avalon.filters.idsOp = function (obj) {
+
+//处理传递的数据,然后再继续传递--------数据组件 流转过程如果需要修改传递数据 解决方案
+avalon.filters.idsOp = function (obj) 
+{
     var ids = Enumerable.From(obj.data.classId).Select("x=>x.F_Id").ToArray().join(",");
     obj.data.classId = ids;
     return obj;
 }
+
 </script>
 
+   
    
 <xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
     <!-- 
