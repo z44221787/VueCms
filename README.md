@@ -1,5 +1,5 @@
 例子：----------------------------------------  
-所有依赖  
+所有依赖 
     <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>  
     <!-- 模版所需要js文件 -->  
     <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>  
@@ -109,6 +109,10 @@
         uppercase:转换大写 {{@a | uppercase}}  
 
         lowercase:转小写  {{@a | lowercase}}  
+
+        capitalize：首字母大写 {{@a | capitalize}}
+
+        htmltoText:html转纯文本 {{@a | htmltoText}}
 
         truncate(length,str):截取字符串  {{@a | truncate(10,'...')}}  
 
