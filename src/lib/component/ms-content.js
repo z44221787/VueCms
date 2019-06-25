@@ -156,6 +156,7 @@
             return mm;
         };
         
+        // ajax post 数据
         var postData = function (url , params , dataType) {
             if (!dataType) {
                 dataType = 'json';

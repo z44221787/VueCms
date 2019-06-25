@@ -35,7 +35,8 @@
         </xmp> -->
 
 
-        <xmp ms-widget="{is:'ms-content',data:{num:3,array:[1, 2, 3, 4, 5, 6],object: {a: 1, b: 2, c: 3, d: 4, e: 5}}}">
+        <xmp ms-widget="{is:'ms-content',load:['loadData'],events:['changeLimitNum']}">
+            <span zr-if="data.num===undefined">故意延迟加载数据了3秒，请稍等.....</span>
             <select zr-duplex-number='@data.num'>
                 <option>1</option>
                 <option>2</option>
@@ -50,78 +51,38 @@
                 <li zr-for='el in @data.object | limitBy(@data.num)'>{{el}}</li>
             </ul>
         </xmp>
+        <input id='num' type="text" value="1">
+        <button type="button" onclick="change()">手动改变筛选几条</button>
     </ul>
 </body>
 
 <script>
-    // jQuery.ajaxSetup({
-    //     xhr: function () {
-    //         //return new window.XMLHttpRequest();
-    //         try {
-    //             if (window.ActiveXObject)
-    //                 return new window.ActiveXObject("Microsoft.XMLHTTP");
-    //         } catch (e) {}
-
-    //         return new window.XMLHttpRequest();
-    //     }
-    // });
-
-    // //步骤一:创建异步对象
-    // var ajax = new XMLHttpRequest();
-    // //步骤二:设置请求的url参数,参数一是请求的类型,参数二是请求的url,可以带参数,动态的传递参数starName到服务端
-    // ajax.open('get', 'http://172.24.241.175/ApiService/GetClassListByName');
-    // //步骤三:发送请求
-    // ajax.send();
-    // //步骤四:注册事件 onreadystatechange 状态改变就会调用
-    // ajax.onreadystatechange = function () {
-    //     if (ajax.readyState == 4 && ajax.status == 200) {
-    //         //步骤五 如果能够进到这个判断 说明 数据 完美的回来了,并且请求的页面是存在的
-    //         console.log(ajax.responseText); //输入相应的内容
-    //     }
-    // }
-    jQuery.support.cors = true;
-    $.ajax({
-            url: '/src/pages/data/政务要闻.txt',
-            type: 'get',
-            dataType: 'json',
-            data:{name:"hah",age:"14"},
-            success: function (result) {
-                var json = eval (result);
-                // alert(json.length);
-                var i=0;
-                for(i;i<json.length;i++){
-                    alert(result[0]);
-                    var app=document.createElement("li");
-                    app.innerHTML=json[i];
-                    var father=document.getElementById("con1");
-                    father.appendChild(app);
+    function loadData(e) {
+        window.setTimeout(function () {
+            var data = {
+                num: 3,
+                array: [1, 2, 3, 4, 5, 6],
+                object: {
+                    a: 1,
+                    b: 2,
+                    c: 3,
+                    d: 4,
+                    e: 5
                 }
-            }
-        });
+            };
+            e.resolve(data);
+        }, 3000);
+    }
 
-    // 加载数据
-    // function loadZwyw(e) {
-    //     window.setTimeout(function () {
-    //         jQuery.support.cors = true;
-    //         $.ajax({
-    //             url: "http://172.24.241.175/ApiService/GetClassListByName",
-    //             type:'get',
-    //             data: {
-    //                 classNames: "药监动态"
-    //             },
-    //             dataType: 'json',
-    //             success: function (data) {
-    //                 e.resolve(data);
-    //             },
-    //             error: function (e, ee, eee) {
-    //                 console.info(e);
-    //             }
-    //         });
-    //         // getData('/src/pages/data/政务要闻.txt', '').then(function (data) {
-    //         //     e.resolve(data);
-    //         // });
-    //     }, 2000)
-    // };
+
+
+    function change() {
+        zEvent.emit('changeLimitNum', $("#num").val());
+    }
+
+    function changeLimitNum(e, ee) {
+        ee.data.num = Number(e);
+    }
 </script>
 
 </html>

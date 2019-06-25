@@ -1,147 +1,100 @@
 例子：----------------------------------------
-    <!-- 基类 -->
-<script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+所有依赖
+    <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+    <!-- 模版所需要js文件 -->
+    <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/promiseM.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/Event.js"></script>
+    <script type="text/javascript" src="/src/lib/linq.js_ver2.2.0.2/linq.js"></script>
+    <script type="text/javascript" src="/src/lib/component/ms-content.js"></script>    
 
-<script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
-
-<!-- 帮助类 -->
-<script type="text/javascript" src="/src/pages/outils.min.js"></script>
-
-<script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
-
-    <!-- 分页 -->
-<script type="text/javascript" src="/src/lib/layui/dist/layui.js"></script>
-
-<link rel="stylesheet" href="/src/lib/layui/dist/css/layui-page.css">
-
-
+/* 解决页面初始化加载出现花括号 */  页面中写入样式
 <style>
-        /* 解决页面初始化加载出现花括号 */
-        .ms-controller {
-            display: none;
-        }
-
-        ul
-        {
-            list-style-type: none;
-            padding: 10px;
-            margin: 10px;
-        }
-
-        ul li
-        {
-            background-repeat: no-repeat;
-            background-position: 0px 5px; 
-            padding-left: 14px; 
-        }
-
-
-
-        .hover{
-            color: red
-        }
-
+    .ms-controller {
+        display: none;
+    }
 </style>
 
-
-
- //事件处理 -解决方案
-<script>
-
-function msg(e, ee) 
-{
-    alert("您当前点击了栏目编号为" + e.F_Id);
-    jQuery(ee.target).css("color", "red");
-}
-
-
-//处理传递的数据,然后再继续传递--------数据组件 流转过程如果需要修改传递数据 解决方案
-avalon.filters.idsOp = function (obj) 
-{
-    var ids = Enumerable.From(obj.data.classId).Select("x=>x.F_Id").ToArray().join(",");
-    obj.data.classId = ids;
-    return obj;
-}
-
-</script>
-
-   
-   
-<xmp ms-widget='{is:"ms-data",url:"http://172.24.248.39/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
-    <!-- <ul id='ceshi' ms-for="(i v) in data.list">
-        <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
-    </ul>
-    -->
-    <div type='widget' widget='{is:"ms-data",url:"http://172.24.248.39/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
-        <!-- <h1>
-      共有{{docData.list.length}}篇文章
-     <ul ms-for="(i v) in docData.list">
-        <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
-     </ul> 
-    </h1> -->
-        <div type='widget' widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></div>
-    </div>
-</xmp>
-
-    
-<xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"通知公告"},dataType:"jsonp"}'>
-        <!-- 
-       <ul id='ceshi' ms-for="(i v) in data.list">
-            <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
-        </ul>-->
-        <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:"owner",classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
-            <!-- <h1>
-          共有{{docData.list.length}}篇文章
-         <ul ms-for="(i v) in docData.list">
-            <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
-         </ul> 
-        </h1> -->
-               <div type="widget" widget='{is:"ms-page",count:@docData.records,rows:2}'></div>
-        </div>
-</xmp>
-
-
-例子：----------------------------------------
-
-一、数据组件注意事项---请仔细阅读理解（看例子理解）
+一、数据组件注意事项---请仔细阅读理解（看例子理解 index.text.1.html）
     1、数据组件中如果使用模板引擎，需要使用注释标签包裹，数据组件可以无限制嵌套，一个数据组件中可以使用一个UI组件，如例子
 
     2、模板语法中对于变量名建议添加@前缀
 
     3、模板引擎指令，需要使用双引号包裹，值用单引号,   组件指令 widget不限制
 
-    4、数据组件 传递的data数据中某属性来源与url则对应属性值改为owner 如classNames，表示将url参数classNames传递给接口服务
-    <xmp ms-widget='{is:"ms-data",url:"http://xxx.xx.xx/ApiService/XXXX",data:{classNames:"owner"},dataType:"jsonp"}
+    4、数据组件 is:'ms-content' 固定参数,
+               load：数据初始化函数(可以不写),
+               events:组件通信事件函数(可以不写),
+               data：数据对象，如果load函数编写了可以不写
+    <xmp ms-widget="{is:'ms-content',load:['初始化函数名','参数1','参数2'],events:['changeLimitNum','消息事件函数名2'],data:{}">
 
-    5、模板引擎注释体html标签，一旦使用指令或表达式，不允许跨数据组件，必须在同一个数据组件闭合，如果没有使用指令或表达式，允许跨域多个数据组件闭合，详细可看例子
+二、组件参数 load 用法使用说明
+    <xmp ms-widget="{is:'ms-content',load:['loadData','参数1','参数2']">
+    load 用于组件数据域对象data的初始化，一般的数据初始化请在这个函数中执行
 
-三、数据组件中使用模板引擎指令
+    外部注册一个函数 使用e.resolve(data);将数据对象压入组件
+    function loadData(e){
+        var data={num:3,array:[1, 2, 3, 4, 5, 6],object: {a: 1, b: 2, c: 3, d: 4, e: 5}};
+        e.resolve(data);
+   }
+
+
+三、组件参数 evetns 用法详细说明：
+    <xmp ms-widget="{is:'ms-content',load:['初始化函数名','参数1','参数2'],events:['changeLimitNum','消息事件函数名2']">
+    用于组件与外部html事件 或与内部子组件通过事件进行通信 ，可以通过消息函数改变组件内部作用域
+    例如：消息函数名：changeLimitNum 表示外部已经注册了一个名为changeLimitNum 的函数
+    
+    外部注册函数  最后一个参数ee总是默认为当前组件的vm作用域，前面的参数为emit传参
+    function changeLimitNum(e,ee) {
+       ee.data.num=Number(e);
+   }
+
+   通过事件触发函数changeLimitNum执行，并传递参数，zEvent.emit 发布执行函数
+    function change() {
+       zEvent.emit('changeLimitNum',$("#num").val());
+   }
+
+
+四、数据组件中使用模板引擎指令
     1、插值表达式 {{@msg}} <div>{{@msg}}</div>
 
-    2、条件判断指令 ms-if   <div ms-if="1==1"></div>,条件判断指令会根据条件情况判断是否加载包裹的标签体
+    2、双向绑定 zr-duplex <input type='text' zr-duplex='@num'>
 
-    3、显示隐藏指令 ms-visible <div ms-visible="1==1"></div>,显示隐藏指令是根据条件情况利用display：block、none显示隐藏标签体
+    3、双向绑定数据强制转换 
+       ms-duplex-string：强制转换为字符串
 
-    4、属性指令 ms-attr <div ms-attr="{id:@id}"></div> , 语法类同 jquery 语法
+       ms-duplex-number：强制转换为数字
 
-    5、样式指令 ms-css <div ms-css="{color:@color}"></div>, 语法类同 jquery 语法
+       ms-duplex-boolean：强制转换为bool型
 
-    6、类指令  ms-class <div ms-class="[@aaa, @bbb,'pages']"></div>,类名直接对应放入数组中
+       ms-duplex-checked：特殊 用于radio 和checkbox控件（radio和checkbox控件请使用）
 
-    7、鼠标按下松开指令 ms-active <div ms-active="[@aaa, @bbb,'pages']"></div> 鼠标按下放入某个类，松开移除
+    4、条件判断指令 zr-if   <div zr-if="1==1"></div>,条件判断指令会根据条件情况判断是否加载包裹的标签体
 
-    8、鼠标划上移开指令 ms-hover <div ms-hover="[@aaa, @bbb,'pages']"></div> 鼠标划上放入某个类，移开移除
+    5、显示隐藏指令 zr-visible <div zr-visible="1==1"></div>,显示隐藏指令是根据条件情况利用display：block、none显示隐藏标签体
 
-    9、文本指令 ms-text <div ms-text="@aaa"></div> 类同插值表达式 <div>{{@aaa}}</div>
+    6、属性指令 zr-attr <div zr-attr="{id:@id}"></div> , 语法类同 jquery 语法
 
-    10、html指令 ms-html <div ms-html="@aaa"></div> 如果需要放入html标记标签等，需要使用这个标签，文本标签和插值表达式不支持html
+    7、样式指令 zr-css <div zr-css="{color:@color}"></div>, 语法类同 jquery 语法
 
-    11、循环指令 ms-for  <ul ms-for="(index value) in @data"><li>{{@value}}</li></ul></div>
+    8、类指令  zr-class <div zr-class="[@aaa, @bbb,'pages']"></div>,类名直接对应放入数组中
 
-    12、事件指令 ms-on-xxx  <div ms-on-click="trigger('functionName',@v,$event)"></div>
+    9、鼠标按下松开指令 zr-active <div zr-active="[@aaa, @bbb,'pages']"></div> 鼠标按下放入某个类，松开移除
+
+    10、鼠标划上移开指令 zr-hover <div zr-hover="[@aaa, @bbb,'pages']"></div> 鼠标划上放入某个类，移开移除
+
+    11、文本指令 zr-text <div zr-text="@aaa"></div> 类同插值表达式 <div>{{@aaa}}</div>
+
+    12、html指令 zr-html <div zr-html="@aaa"></div> 如果需要放入html标记标签等，需要使用这个标签，文本标签和插值表达式不支持html
+
+    13、循环指令 zr-for  <ul zr-for="el in @data"><li>{{@el}}</li></ul></div> 
+                        <ul zr-for="(index value) in @data"><li>{{@value}}</li></ul></div>
+
+    14、事件指令 zr-on-xxx  <div zr-on-click="trigger('functionName',@v,$event)"></div>
         注1、 当前支持几乎所有js事件类型，如： animationend、 blur、 change、 input、 click、 dblclick、 focus、 keydown、 keypress、 keyup、 mousedown、 mouseenter、 mouseleave、 mousemove、 mouseout、 mouseover、 mouseup、 scan、 scroll、 submit
 
-        注2、 事件可以叠加执行 如 ms-on-click-1 ms-on-click-2,只需要在指令后添加索引值就可以，从1开始
+        注2、 事件可以叠加执行 如 zr-on-click-1 zr-on-click-2,只需要在指令后添加索引值就可以，从1开始
 
         注3、 事件触发自定义函数
              /**@param functionName：自定义函数名
@@ -152,7 +105,7 @@ avalon.filters.idsOp = function (obj)
 
         注4、 支持数据传递到函数中，$event为特殊参数:该参数可以方便获取事件类型，和可以使用$event.target获取触发事件的dom
 
-    13、常用管道过滤器
+    15、常用管道过滤器
         uppercase:转换大写 {{@a | uppercase}}
 
         lowercase:转小写  {{@a | lowercase}}
@@ -168,3 +121,29 @@ avalon.filters.idsOp = function (obj)
         currency(length):用于格式化货币，类似于number过滤器（即插入千分号），但前面加了一个货币符号，默认使用人民币符号\uFFE5   symbol, 货币符号，默认是\uFFE5 fractionSize，小数点后保留多少数，默认是2  {{@a | currency}} 、  {{@a | currency(3)}}
 
         date(formats):对日期进行格式化，date(formats), 目标可能是符合一定格式的字符串，数值，或Date对象。  {{@a | date('yyyy-MM-dd HH:mm:ss')}}
+
+        limitBy： 只能用于ms-for循环,对数组与对象都有效, 限制输出到页面的个数,
+            参数：
+                limit: 最大个数,必须是数字或字符
+                begin: 开始循环的个数, 可选,默认值0
+                <li ms-for="el in @array | limitBy(3,0)">{{el}}</li>
+
+        orderBy:只能用于ms-for循环,对数组与对象都有效, 用于排序, 
+        参数
+            key: 要排序的属性名
+            dir: -1或1, 顺序或倒序,可选,默认值1
+             <li zr-for="el in @array | orderBy('name',1)">{{el}}</li>
+
+        change：用于ms-duplex 双向绑定 使其失去焦点时才进行同步, 而不是每次变化都同步
+
+        debounce：用于ms-duplex 双向绑定 使其经过多少毫秒进行同步, 而不是每次变化都同步，多用于自动搜索框
+        参数 
+
+
+五：自定义过滤器 ---可以用于组件上或者是组件内部，可用于特殊数据处理
+avalon.filters.idsOp = function (obj) 
+{
+    var ids = Enumerable.From(obj.data.classId).Select("x=>x.F_Id").ToArray().join(",");
+    obj.data.classId = ids;
+    return obj;
+}
