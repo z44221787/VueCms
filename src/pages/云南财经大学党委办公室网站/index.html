@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <html>
-
 <head>
 	<metahttp-equiv="X-UA-Compatible" content="IE=edge" />
 	<title>云南省财经大学党委办公室</title>
@@ -19,6 +18,17 @@
 	<script type="text/javascript" src="/src/lib/utils/Event.js"></script>
 	<script type="text/javascript" src="/src/lib/linq.js_ver2.2.0.2/linq.js"></script>
 	<script type="text/javascript" src="/src/lib/component/ms-content.js"></script>
+
+	<style>
+		ul li{
+			color: red;
+			font-size: 18px;
+		}
+
+		ul li a{
+			color: red;
+		}
+	</style>
 </head>
 
 <body>
@@ -97,7 +107,6 @@
 				</div>
 				<ul>
 					<xmp ms-widget="{is:'ms-content',load:['loadGzdt']}">
-						<span zr-if="data.length===undefined">正在加载工作动态数据。。。。。</span>
 						<li zr-for="@el in data">
 							<a href="#">{{@el.title | truncate(35,'...')}}</a>
 							<span>[{{@el.postTime | date('yyyy-MM-dd')}}]</span>

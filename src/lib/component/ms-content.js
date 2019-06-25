@@ -187,3 +187,11 @@ avalon.filters.capitalize = function(value){
     value = value.toString();
     return value.charAt(0).toUpperCase() + value.slice(1);
 };
+
+
+
+// 通用常用方法
+function heredoc(fn) {
+    return fn.toString().replace(/^[^\/]+\/\*!?\s?/, '').
+        replace(/\*\/[^\/]+$/, '').trim().replace(/>\s*</g, '><')
+};

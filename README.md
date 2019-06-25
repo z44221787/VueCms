@@ -63,13 +63,13 @@
     2、双向绑定 zr-duplex <input type='text' zr-duplex='@num'>  
 
     3、双向绑定数据强制转换   
-       ms-duplex-string：强制转换为字符串  
+       zr-duplex-string：强制转换为字符串  
 
-       ms-duplex-number：强制转换为数字  
+       zr-duplex-number：强制转换为数字  
 
-       ms-duplex-boolean：强制转换为bool型  
+       zr-duplex-boolean：强制转换为bool型  
 
-       ms-duplex-checked：特殊 用于radio 和checkbox控件（radio和checkbox控件请使用）  
+       zr-duplex-checked：特殊 用于radio 和checkbox控件（radio和checkbox控件请使用）  
 
     4、条件判断指令 zr-if   <div zr-if="1==1"></div>,条件判断指令会根据条件情况判断是否加载包裹的标签体  
 
@@ -154,3 +154,6 @@ avalon.filters.idsOp = function (obj)
     obj.data.classId = ids;  
     return obj;  
 }  
+
+
+六、 自定义组件 --请按照基本格式编写
