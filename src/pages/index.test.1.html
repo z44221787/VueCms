@@ -47,11 +47,10 @@
             </ul>
 
             <hr>
-            <h2>改变分页组件</h2>
+            <h1>分页组件(由父级提供基础数据)</h1>
+            <template zr-widget="{is:'ms-pager',totalPage:@data.totalPage,showPage:@data.showPage,pages:@data.pages,events:['changePage']}"></template>
         </xmp>
 
-        <h1>分页组件</h1>
-        <template ms-widget="{is:'ms-pager',events:['changePage']}"></template>
 
         <input id='num' type="text" value="1">
         <button type="button" onclick="change()">手动改变筛选几条</button>
@@ -72,51 +71,38 @@
                     e: 5
                 }
             };
-            data.tree=[
-                        {text: "aaa", open: 1, subtree: [
-                                {text: 1111, open: 1, subtree: []},
-                                {text: 2222, open: 1, subtree: [
-                                        {text: 777, open: 1, subtree: []}
-                                    ]},
-                                {text: 3333, open: 1, subtree: [
-                                        {text: 8888, open: 1, subtree: []},
-                                        {text: 9999, open: 1, subtree: [
-                                                {text: '司徒正美', open: 1, subtree: []}
-                                            ]}
-                                    ]}
-                            ]},
-                        {text: "bbb", open: 1, subtree: [
-                                {text: 4444, open: 1, subtree: []},
-                                {text: 5555, open: 1, subtree: []},
-                                {text: 6666, open: 1, subtree: []}
-                            ]},
-                        {text: "ccc", open: 1, subtree: []},
-                        {text: "ddd", open: 1, subtree: []},
-                        {text: "eee", open: 1, subtree: [
-                                {text: 1234, open: 1, subtree: []}
-                            ]},
-                        {text: "fff", open: 1, subtree: []}
-                    ];
+            
+            // 提前利用父级数据预加载子组件分页控件数据
+            data.totalPage = 12;
+            data.showPage = 3;
+            data.pages = [1,2,3],
+
             e.resolve(data);
         }, 3000);
     }
 
-
-    function EmitchangePage(pageSize){
-        zEvent.emit('changePage',pageSize);
-    }
-
+    // 注册消息事件
     function changePage(e,ee){
         ee.currentPage=Number(jQuery(e.target).val());
     }
 
+    // 在事件中发布触发事件
+    function EmitchangePage(pageSize){
+        zEvent.emit('changePage',pageSize);
+    }
+
+
+    
+    // 注册消息事件
+    function changeLimitNum(e, ee) {
+        ee.data.num = Number(e);
+    }
+
+    // 在事件中发布触发事件    
     function change() {
         zEvent.emit('changeLimitNum', $("#num").val());
     }
 
-    function changeLimitNum(e, ee) {
-        ee.data.num = Number(e);
-    }
 </script>
 
 </html>
