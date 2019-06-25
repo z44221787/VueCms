@@ -16,6 +16,10 @@
     <script type="text/javascript" src="/src/lib/linq.js_ver2.2.0.2/linq.js"></script>
     <script type="text/javascript" src="/src/lib/component/ms-content.js"></script>
 
+    <!-- 引入分页组件 -->
+    <script type="text/javascript" src="/src/lib/component/pagerComponent/pageComponent.js"></script>
+    <link href="/src/lib/component/pagerComponent/pageComponent.css" rel="stylesheet"></link>
+
     <style>
         /* 解决页面初始化加载出现花括号 */
         .ms-controller {
@@ -26,18 +30,9 @@
 
 <body>
     <ul class="new02 XxKul">
-        <!-- <xmp ms-widget="{is:'ms-content',load:['loadZwyw']}">
-            <span style="font-size: 14px;color: red;" zr-if="data.length===undefined">正在加载数据。。。</span>
-            <li zr-for="el in @data">
-                <a href="#">{{@el.title | truncate(15,'……')}}</a>
-                <span>{{@el.postTime | date('MM-dd')}}</span>
-            </li>
-        </xmp> -->
-
-
         <xmp ms-widget="{is:'ms-content',load:['loadData'],events:['changeLimitNum']}">
             <span zr-if="data.num===undefined">故意延迟加载数据了3秒，请稍等.....</span>
-            <select zr-duplex-number='@data.num'>
+            <select zr-on-change="@trigger('EmitchangePage',$event)" zr-duplex-number='@data.num | change'>
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -50,7 +45,14 @@
             <ul>
                 <li zr-for='el in @data.object | limitBy(@data.num)'>{{el}}</li>
             </ul>
+
+            <hr>
+            <h2>改变分页组件</h2>
         </xmp>
+
+        <h1>分页组件</h1>
+        <template ms-widget="{is:'ms-pager',events:['changePage']}"></template>
+
         <input id='num' type="text" value="1">
         <button type="button" onclick="change()">手动改变筛选几条</button>
     </ul>
@@ -70,11 +72,43 @@
                     e: 5
                 }
             };
+            data.tree=[
+                        {text: "aaa", open: 1, subtree: [
+                                {text: 1111, open: 1, subtree: []},
+                                {text: 2222, open: 1, subtree: [
+                                        {text: 777, open: 1, subtree: []}
+                                    ]},
+                                {text: 3333, open: 1, subtree: [
+                                        {text: 8888, open: 1, subtree: []},
+                                        {text: 9999, open: 1, subtree: [
+                                                {text: '司徒正美', open: 1, subtree: []}
+                                            ]}
+                                    ]}
+                            ]},
+                        {text: "bbb", open: 1, subtree: [
+                                {text: 4444, open: 1, subtree: []},
+                                {text: 5555, open: 1, subtree: []},
+                                {text: 6666, open: 1, subtree: []}
+                            ]},
+                        {text: "ccc", open: 1, subtree: []},
+                        {text: "ddd", open: 1, subtree: []},
+                        {text: "eee", open: 1, subtree: [
+                                {text: 1234, open: 1, subtree: []}
+                            ]},
+                        {text: "fff", open: 1, subtree: []}
+                    ];
             e.resolve(data);
         }, 3000);
     }
 
 
+    function EmitchangePage(pageSize){
+        zEvent.emit('changePage',pageSize);
+    }
+
+    function changePage(e,ee){
+        ee.currentPage=Number(jQuery(e.target).val());
+    }
 
     function change() {
         zEvent.emit('changeLimitNum', $("#num").val());

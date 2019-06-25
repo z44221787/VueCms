@@ -99,6 +99,7 @@
         注3、 事件触发自定义函数  
              /**@param functionName：自定义函数名  
                 @param arguments：其他参数  
+                $event 固定写法，获取当前elment对象
                 参数个数无限制，不过需要保证第一位参数为需要执行的自定义函数名称  
               */  
             使用trigger('functionName',@data,$event),触发编写的js函数  
@@ -139,9 +140,10 @@
              <li zr-for="el in @array | orderBy('name',1)">{{el}}</li>  
 
         change：用于ms-duplex 双向绑定 使其失去焦点时才进行同步, 而不是每次变化都同步  
+        <input ms-duplex='@aaa | change'>{{@aaa}}  
 
-        debounce：用于ms-duplex 双向绑定 使其经过多少毫秒进行同步, 而不是每次变化都同步，多用于自动搜索框  
-        参数   
+        debounce：用于ms-duplex 双向绑定 使其经过多少毫秒进行同步, 而不是每次变化都同步，多用于自动搜索框    
+        <input ms-duplex='@aaa | debounce(200)'>  
 
 
 五：自定义过滤器 ---可以用于组件上或者是组件内部，可用于特殊数据处理  
