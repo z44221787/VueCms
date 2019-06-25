@@ -27,7 +27,8 @@
                load：数据初始化函数(可以不写),
                events:组件通信事件函数(可以不写),
                data：数据对象，如果load函数编写了可以不写
-    <xmp ms-widget="{is:'ms-content',load:['初始化函数名','参数1','参数2'],events:['changeLimitNum','消息事件函数名2'],data:{}">
+    <xmp ms-widget="{is:'ms-content',load:['初始化函数名','参数1','参数2'],events:['changeLimitNum','消息事件函数名2'],data:{}">  
+    组件内部调用子组件请将ms-widget 改为 zr-widget 其他不变  
 
 二、组件参数 load 用法使用说明  
     <xmp ms-widget="{is:'ms-content',load:['loadData','参数1','参数2']">  
