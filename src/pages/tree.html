@@ -9,19 +9,8 @@
     <body>
         <blockquote>
             <div ms-controller="tree">
-                <!-- <wbr ms-widget='{is:"tree",tree: @data}' /> -->
+                <wbr ms-widget='{is:"tree",tree: @data}' />
 
-                <xmp ms-widget='{is:"test",rdata:@header}'>
-                    <table slot='header'>
-                        <tr>
-                            <td :for="el in @header" style="width:200px" >
-                                {{el}}
-                        </td>
-                        <ul>
-                            <li>{{el}}</li>
-                        </ul>
-                    </tr>
-                </xmp>
             </div>
 
             <script>
@@ -94,25 +83,7 @@
 
                 })
          
-                
-                avalon.component('test',{
-                    template:heredoc(function(){
-                        /*
-                        <cc>
-                            <slot name='header'></slot>
-                        </cc>
-                        */
-                    }),
-                    defaults:{
-                        onInit:function(e){
-                            console.info(e.$model);
-                        },
-                        onReady:function(e){
-                            
-                        },
-                        rdata:[{name:"lili"},{name:"coco"}],
-                    },
-                });
+            
          </script>
         </blockquote>
 

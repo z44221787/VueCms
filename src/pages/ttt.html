@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+     <!-- 基类 -->
+     <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+     <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+
+    <!-- 通用工具类 解决IE8-9某些奇葩bug-->
+    <script type="text/javascript" src="/src/pages/outils.min.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/GetRequest.js"></script>
+    <script type="text/javascript" src="/src/lib/linq.js_ver2.2.0.2/linq.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/ggJS.js"></script>
+    
+
+    <!-- ajax分页 -->
+    <script type="text/javascript" src="/src/lib/layui/dist/layui.js"></script>
+    <link rel="stylesheet" href="/src/lib/layui/dist/css/layui-page.css">
+    <!-- 组件类 -->
+    <script type="text/javascript" src="/src/lib/component/component.js"></script>
+    <style>
+           .ms-controller {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+        <xmp ms-widget='{is:"ms-data",url:"http://127.0.0.1/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
+            <!-- 
+           <ul id='ceshi' ms-for="(i v) in data.list">
+                <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
+            </ul>-->
+            <div type='widget' widget='{is:"ms-data",url:"http://127.0.0.1/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list[0].F_Id},dataType:"jsonp",reName:"docData"}'>
+                <!-- <h1>
+              共有{{docData.list.length}}篇文章
+             <ul ms-for="(i v) in docData.list">
+                <li ms-attr="{name:'koko'}" ms-hover="['hover']" ms-on-dblclick-1="trigger('msg',@v,$event)" ms-on-dblclick-2="trigger('msg',@v,$event)">{{@v.F_Topic | truncate(20,'...')}} &nbsp;&nbsp;发布时间{{@v.F_CreatorTime | date("yyyy MM dd:HH:mm:ss")}}</li>
+             </ul> 
+            </h1> -->
+            <div type='widget' widget='{is:"ms-page",count:@docData.records,changData:@docData,rowsName:"rows",pageName:"page"}'></div>
+            </div>
+        </xmp>
+</body>
+</html>

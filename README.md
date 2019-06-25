@@ -67,12 +67,12 @@ avalon.filters.idsOp = function (obj)
 
    
    
-<xmp ms-widget='{is:"ms-data",url:"http://localhost/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
-    <!-- 
-   <ul id='ceshi' ms-for="(i v) in data.list">
+<xmp ms-widget='{is:"ms-data",url:"http://172.24.248.39/ApiService/GetClassListByName",data:{classNames:"药监动态"},dataType:"jsonp"}'>
+    <!-- <ul id='ceshi' ms-for="(i v) in data.list">
         <li><a ms-attr="{href:'http://www.baidu.com?className='+@v.F_Id}" ms-css="{width:data.list.length}" target="_blank">{{@v.F_ClassName}}</a></li>
-    </ul>-->
-    <div type='widget' widget='{is:"ms-data",url:"http://localhost/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
+    </ul>
+    -->
+    <div type='widget' widget='{is:"ms-data",url:"http://172.24.248.39/ApiService/GetDocListByClassId",data:{rows:2,page:1,classId:data.list},dataType:"jsonp",reName:"docData"} | idsOp'>
         <!-- <h1>
       共有{{docData.list.length}}篇文章
      <ul ms-for="(i v) in docData.list">

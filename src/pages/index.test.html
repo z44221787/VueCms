@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+    <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/promiseM.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/Event.js"></script>
+    <style>
+        /* 解决页面初始化加载出现花括号 */
+        .ms-controller {
+            display: none;
+        }
+    </style>
+    <script>
+        // 事件出发
+        function msg(e, ee) {
+            console.info(e);
+            console.info(ee);
+        };
+
+        // 事件触发
+        function msg1(e, ee) {
+            console.info(e);
+        };
+
+        // 特殊数据处理
+        avalon.filters.idsOp = function (obj) {
+            console.info(obj);
+            return obj;
+        }
+
+        // avalon ms-content特殊处理，使其可以支持插槽使用模板语法，支持数据传递
+        avalon.component("ms-content", {
+            template: "<cc class='ms-controller'><slot name='rdata'></slot></cc>",
+            defaults: {
+                // 用于初始化组件数据--初始化定义变量
+                load: [],
+                data: {},
+                events: [],
+                trigger: function () {
+                    var args = [];
+                    avalon.mix(args, arguments);
+                    var funcName = args[0];
+                    avalon.Array.removeAt(args, 0);
+                    var dddd = "";
+                    for (var i = 0; i < args.length; i++) {
+                        if (avalon.isObject(args[i])) {
+                            dddd += "args[" + i + "]" + ",";
+                        } else {
+                            dddd += "\'" + args[i] + "\'" + ",";
+                        }
+                    }
+                    dddd = (dddd.slice(dddd.length - 1) == ',') ? dddd.slice(0, -1) : dddd;
+                    //解析参数，判断参数类型，然后给与方法回调
+                    eval(funcName + "(" + dddd + ")");
+                },
+                onInit: function (e) {
+                    // 处理模板语句-------------------------------
+                    var dom = e.target;
+                    var that = this;
+                    var vm; // vm 对象
+                    // 清空模板组件下的html
+                    var htmlTemplate = $(dom).find('template').text();
+                    // 将所有zr- 替换为ms-
+                    var html = $(e.target).html().replace(new RegExp('zr-', "g"), 'ms-').replace(new RegExp(
+                        '{#', "g"), '{{').replace(new RegExp('#}', "g"), '}}');
+                    $(dom).html(html);
+                    if (htmlTemplate) {
+                        $(dom).find('template').html(htmlTemplate.replace(new RegExp('{{', "g"), '{#')
+                            .replace(new RegExp('}}', "g"), '#}'));
+                    }
+                    // 处理模板语句-------------------------------
+
+                    // 修改自身，将自己更改为 控制器
+                    var uuid = UUID();
+                    dom.setAttribute('ms-controller', uuid);
+
+                    // 事件定义
+                    var options = {};
+
+                    options.trigger = function () {
+                        var args = [];
+                        avalon.mix(args, arguments);
+                        var funcName = args[0];
+                        avalon.Array.removeAt(args, 0);
+                        var dddd = "";
+                        for (var i = 0; i < args.length; i++) {
+                            if (avalon.isObject(args[i])) {
+                                dddd += "args[" + i + "]" + ",";
+                            } else {
+                                dddd += "\'" + args[i] + "\'" + ",";
+                            }
+                        }
+                        dddd = (dddd.slice(dddd.length - 1) == ',') ? dddd.slice(
+                            0, -1) : dddd;
+                        //解析参数，判断参数类型，然后给与方法回调
+                        eval(funcName + "(" + dddd + ")");
+                    };
+
+
+                    // 定义vm 并扫描执行转换vm
+                    vm = avalon.define({
+                        $id: uuid,
+                        data: this.data,
+                        trigger: options.trigger
+                    });
+
+                    // 查看event中是否设置了订阅事件名，如果设置了则添加事件订阅
+                    for (var i = 0; i < this.events.length; i++) {
+                        var tahtEvent = this.events[i];
+                        zEvent.on(tahtEvent, function () {
+                            var args = [];
+                            args = avalon.mix(true, args, arguments);
+                            args.push(vm);
+                            var dddd = "";
+                            for (var i = 0; i < args.length; i++) {
+                                if (avalon.isObject(args[i])) {
+                                    dddd += "args[" + i + "]" + ",";
+                                } else {
+                                    dddd += "\'" + args[i] + "\'" + ",";
+                                }
+                            }
+                            dddd = (dddd.slice(dddd.length - 1) == ',') ? dddd.slice(0, -1) : dddd;
+                            eval(tahtEvent + "(" + dddd + ")");
+                        });
+                    }
+
+
+                    // 处理数据-- 如果存在load事件
+                    if (this.load.length > 0) {
+                        var thatLoad = this.load;
+                        var mm = new PromiseX(function (resolve, reject, e) {
+                            var args = [];
+                            args = avalon.mix(args, thatLoad);
+                            var funcName = thatLoad[0];
+                            avalon.Array.removeAt(args, 0);
+                            args.push(e);
+                            var dddd = "";
+                            for (var i = 0; i < args.length; i++) {
+                                if (avalon.isObject(args[i])) {
+                                    dddd += "args[" + i + "]" + ",";
+                                } else {
+                                    dddd += "\'" + args[i] + "\'" + ",";
+                                }
+                            }
+                            dddd = (dddd.slice(dddd.length - 1) == ',') ? dddd.slice(0, -1) : dddd;
+                            //解析参数，判断参数类型，然后给与方法回调
+                            eval(funcName + "(" + dddd + ")");
+                        });
+                        mm.then(function (data) {
+                            // 向this.data 中加入数据
+                            vm.data = data;
+                            // 最后扫描
+                            avalon.scan(dom, vm);
+                            console.log("ok!");
+                        }, function () {
+                            console.log('fail!');
+                        });
+                    } else {
+                        // 最后扫描
+                        avalon.scan(dom, vm);
+                    }
+
+
+                },
+                onReady: avalon.noop,
+                onViewChange: avalon.noop,
+                onDispose: avalon.noop
+            },
+            soleSlot: 'rdata'
+        });
+
+        // ajax 获取数据
+        var getData = function (url , params , dataType) {
+            if (!dataType) {
+                dataType = 'json';
+            }
+            var mm = new PromiseX(function (resolve, reject, e) {
+                jQuery.get(url , params , function(data,state) {
+                    if(data) {
+                        resolve(data);
+                    }
+                },dataType);
+            });
+        };
+
+        var postData = function (url , params , dataType) {
+            if (!dataType) {
+                dataType = 'json';
+            }
+            var mm = new PromiseX(function (resolve, reject, e) {
+                jQuery.post(url , params , function(data,state) {
+                    if(data) {
+                        resolve(data);
+                    }
+                },dataType);
+            });
+        };
+
+    </script>
+</head>
+
+<body>
+    <xmp ms-widget="{is:'ms-content',load:['loadPData'],events:['changeData']}">
+        <ul zr-if="@data.num.length>0">
+            {{@data.num.length}}
+            <li zr-on-click="@trigger('changeView',@data)" zr-for="el in @data.num">{{@el}}_1</li>
+        </ul>
+        <template zr-widget="{is:'ms-content',load:['loadData',@data.num]}">
+            <div> {{@data.num.length}}</div>
+            <ul zr-if="true">
+                <li zr-on-click="@trigger('emitEvent','子组件',@el)" zr-for="el in @data.num">{{@el}}_2</li>
+            </ul>
+        </template>
+    </xmp>
+    <div>
+        <ul style="list-style: none">
+            <li style="float: left;padding: 2px"><a onclick="zEvent.emit('changeData','分页1','测试1');" href="#">[1]</a>
+            </li>
+            <li style="float: left;padding: 2px"><a onclick="zEvent.emit('changeData','分页2','测试2');" href="#">[2]</a>
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script>
+    // 模拟ajax预处理数据
+    var loadPData = function (e) {
+        window.setTimeout(function () {
+            // 异步加载到数据
+            e.resolve({
+                num: [458, 789]
+            });
+        }, 1000);
+    }
+
+    // 加载子级组件数据
+    var loadData = function (e, ee) {
+        console.info('获取父级数据：' + e);
+        window.setTimeout(function () {
+            // 异步加载到数据
+            ee.resolve({
+                num: ['2_458', '2_789', '2_889']
+            });
+        }, 1000);
+    }
+
+
+    // 组件内部模板语法更改dom域，无需借助消息事件,直接传递data即可 使用数据域data
+    var changeView = function (e) {
+        e.num = ['1_1', '2_2'];
+    }
+
+
+    // 组件之间或者 组件与外部函数之间通信，改变dom域 使用vm域
+    var emitEvent = function (e, ee) {
+        zEvent.emit('changeData', e, ee);
+    }
+
+    var changeData = function (e, ee, eee) {
+        // 完全实现组件通信自由
+        console.info(e);
+        console.info(ee);
+        console.info(eee);
+        eee.data.num = [e, ee];
+    }
+    // 组件之间或者 组件与外部函数之间通信，改变dom域
+</script>
+
+</html>
