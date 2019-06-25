@@ -6,7 +6,6 @@
     <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>  
     <script type="text/javascript" src="/src/lib/utils/promiseM.js"></script>  
     <script type="text/javascript" src="/src/lib/utils/Event.js"></script>  
-    <script type="text/javascript" src="/src/lib/linq.js_ver2.2.0.2/linq.js"></script>  
     <script type="text/javascript" src="/src/lib/component/ms-content.js"></script>      
 
 /* 解决页面初始化加载出现花括号 */  页面中写入样式    
