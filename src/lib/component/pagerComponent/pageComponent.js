@@ -3,9 +3,9 @@ avalon.component("ms-pager", {
         /*
           <div class="pagination">
             <ul>
-            <li :for="el in @pages" 
-               :class="[ el == @currentPage && 'active' ]">
-               <a href="javascript:void(0)" :click="@gotoPage(el, $event)">{{el}}</a>
+            <li ms-for="el in @pages" 
+               ms-class="[ el == @currentPage && 'active' ]">
+               <a href="javascript:void(0)" ms-on-click="@gotoPage(el, $event)">{{el}}</a>
             </li>
             </ul>
           </div>
@@ -16,7 +16,7 @@ avalon.component("ms-pager", {
         currentPage: 1,
         showPage: 7,
         events: [],
-        pages: [1, 2, 3, 4, 5, 6, 7],
+        pages: [1, 2, 3],
         onInit: function (e) {
             // 查看event中是否设置了订阅事件名，如果设置了则添加事件订阅
             for (var i = 0; i < this.events.length; i++) {
@@ -37,6 +37,9 @@ avalon.component("ms-pager", {
                     eval(tahtEvent + "(" + dddd + ")");
                 });
             }
+        },
+        onReady:function(e) {
+            console.info(e);
         },
         gotoPage: function (page, e) {
             this.currentPage = page;

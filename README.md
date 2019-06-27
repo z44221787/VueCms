@@ -33,8 +33,8 @@
     <xmp ms-widget="{is:'ms-content',load:['loadData','参数1','参数2']">  
     load 用于组件数据域对象data的初始化，一般的数据初始化请在这个函数中执行  
 
-    外部注册一个函数 使用e.resolve(data);将数据对象压入组件  
-    function loadData(e){
+    外部注册一个函数 使用e.resolve(data);将数据对象压入组件,vm为当前组件vm作用域对象  
+    function loadData(e,vm){
         var data={num:3,array:[1, 2, 3, 4, 5, 6],object: {a: 1, b: 2, c: 3, d: 4, e: 5}};
         e.resolve(data);
    }
@@ -47,7 +47,7 @@
     
     外部注册函数  最后一个参数ee总是默认为当前组件的vm作用域，前面的参数为emit传参  
     function changeLimitNum(e,ee) {  
-       ee.data.num=Number(e);  
+       ee.data.num=Number(e);  // 改变作用于值
    }  
 
    通过事件触发函数changeLimitNum执行，并传递参数，zEvent.emit 发布执行函数  
@@ -100,6 +100,7 @@
              /**@param functionName：自定义函数名  
                 @param arguments：其他参数  
                 $event 固定写法，获取当前elment对象
+                最后一个回调参数永远存在vm，获取的是vm对象
                 参数个数无限制，不过需要保证第一位参数为需要执行的自定义函数名称  
               */  
             使用trigger('functionName',@data,$event),触发编写的js函数  

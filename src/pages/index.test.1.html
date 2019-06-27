@@ -15,10 +15,12 @@
     <script type="text/javascript" src="/src/lib/utils/Event.js"></script>
     <script type="text/javascript" src="/src/lib/linq.js_ver2.2.0.2/linq.js"></script>
     <script type="text/javascript" src="/src/lib/component/ms-content.js"></script>
+    <script type="text/javascript" src="/src/lib/component/loadingComponent/loadingComponent.js"></script>
 
     <!-- 引入分页组件 -->
     <script type="text/javascript" src="/src/lib/component/pagerComponent/pageComponent.js"></script>
-    <link href="/src/lib/component/pagerComponent/pageComponent.css" rel="stylesheet"></link>
+    <link href="/src/lib/component/pagerComponent/pageComponent.css" rel="stylesheet">
+    </link>
 
     <style>
         /* 解决页面初始化加载出现花括号 */
@@ -29,9 +31,13 @@
 </head>
 
 <body>
+    <h1>正文组件由于采用的是插槽模式所以较为特殊，嵌套组件或组件通信建议使用消息事件，其他非正文组件不需要，变量可以根据父级自动变化，例如分页组件</h1>
     <ul class="new02 XxKul">
         <xmp ms-widget="{is:'ms-content',load:['loadData'],events:['changeLimitNum']}">
-            <span zr-if="data.num===undefined">故意延迟加载数据了3秒，请稍等.....</span>
+            <span zr-if="data.array===undefined">正在加载服务指南数据。。。。。</span>
+            <!-- <template zr-widget="{is:'ms-loading',loading:data.length===undefined}">
+                11111111正在加载数据,请稍后.....
+            </template> -->
             <select zr-on-change="@trigger('EmitchangePage',$event)" zr-duplex-number='@data.num | change'>
                 <option>1</option>
                 <option>2</option>
@@ -39,27 +45,75 @@
                 <option>4</option>
                 <option>5</option>
             </select>
+            <div>{{@data.name}}</div>
+            <input type="button" value="改变name" zr-on-click="@trigger('changePname')" />
             <ul>
                 <li zr-for='el in @data.array | limitBy(@data.num)'>{{el}}</li>
             </ul>
-            <ul>
-                <li zr-for='el in @data.object | limitBy(@data.num)'>{{el}}</li>
-            </ul>
-
             <hr>
-            <h1>分页组件(由父级提供基础数据)</h1>
-            <template zr-widget="{is:'ms-pager',totalPage:@data.totalPage,showPage:@data.showPage,pages:@data.pages,events:['changePage']}"></template>
+            <h1>
+                嵌套正文组件1(嵌套组件如果应用到父级组件数据，请注册消息事件传递变量，在父级别ajax执行完成后发布消息事件，保证变量的顺利传递)
+            </h1>
+            <template zr-widget="{is:'ms-content',events:['load1data']}">
+               <ul>
+                   <li zr-for="el in @data">
+                        {{@el.name}}
+                   </li>
+               </ul>
+               <input type="button" zr-on-click="@trigger('changeKidData')" value="改变我的作用域">
+            </template>
+            <hr>
+            <hr>
+             <h1>普通分页组件(直接使用父级基础数据---变量作用域根据父级作用域变化同步，不需要采用消息事件传递)</h1> 
+            <template  zr-widget="{is:'ms-pager',totalPage:@data.totalPage,showPage:@data.showPage,pages:@data.pages,events:['changePage']}"></template>
         </xmp>
-
-
         <input id='num' type="text" value="1">
         <button type="button" onclick="change()">手动改变筛选几条</button>
     </ul>
+
+
+
+
+    <h1>作用域说明</h1>
+    <script>
+            avalon.define({
+                $id: "AAA",
+                name: "liger",
+                color: "AAA"　　
+            });
+            avalon.define({
+                $id: "BBB",
+                name: "sphinx",
+                color: "BBB"　　
+            });　　
+            avalon.define({
+                $id: "CCC",
+                name: "dragon" //不存在color
+          
+            });
+            avalon.define({
+                $id: "DDD",
+                name: "sirenia" //不存在color
+          
+            });　
+          </script>
+          <div ms-controller="AAA">
+              <div>{{@name}} : {{@color}}</div>
+              <div ms-controller="BBB">
+                  <div>{{@name}} : {{@color}}</div>
+                  <div ms-controller="CCC">
+                      <div>{{@name}} : {{@color}}</div>
+                  </div>
+                  <div ms-important="DDD">
+                      <div>{{@name}} : {{@color}}</div>
+                  </div>
+              </div>
+          </div>
 </body>
 
 <script>
-    function loadData(e) {
-        window.setTimeout(function () {
+   async function loadData(e,vm) {
+     await  window.setTimeout(function () {
             var data = {
                 num: 3,
                 array: [1, 2, 3, 4, 5, 6],
@@ -69,30 +123,38 @@
                     c: 3,
                     d: 4,
                     e: 5
-                }
+                },
+                name: 'lili',
             };
-            
-            // 提前利用父级数据预加载子组件分页控件数据
-            data.totalPage = 12;
-            data.showPage = 3;
-            data.pages = [1,2,3],
 
+            // 提前利用父级数据预加载子组件分页控件数据
+            data.totalPage = 20;
+            data.showPage = 5;
+            data.pages = [1, 2, 3, 4, 5],
             e.resolve(data);
-        }, 3000);
+            zEvent.emit('load1data',data.name,vm);
+        }, 5000);
+    };
+
+    // 注册消息事件
+    function load1data(name, Pvm,vm) {
+        vm.data = [{name:'coco'},{name:'lili'}]
     }
 
     // 注册消息事件
-    function changePage(e,ee){
-        ee.currentPage=Number(jQuery(e.target).val());
+    function changePage(e, ee) {
+        ee.currentPage = Number(jQuery(e.target).val());
     }
 
     // 在事件中发布触发事件
-    function EmitchangePage(pageSize){
-        zEvent.emit('changePage',pageSize);
+    function EmitchangePage(e, ee) {
+        console.info(e);
+        // zEvent.emit('changePage',pageSize);
+
     }
 
 
-    
+
     // 注册消息事件
     function changeLimitNum(e, ee) {
         ee.data.num = Number(e);
@@ -103,6 +165,19 @@
         zEvent.emit('changeLimitNum', $("#num").val());
     }
 
+
+    function changePname(e) {
+        e.data.name='baibai';
+    };
+
+    function changeKidname(e) {
+        e.data=['coco','madan','baicc'];
+    };
+
+
+    function changeKidData(e) {
+        e.data[0].name='baibai';
+    }
 </script>
 
 </html>
