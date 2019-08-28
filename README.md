@@ -100,7 +100,7 @@
              /**@param functionName：自定义函数名  
                 @param arguments：其他参数  
                 $event 固定写法，获取当前elment对象
-                最后一个回调参数永远存在vm，获取的是vm对象
+                // 如果需要改变作用于，需要将整个data传递
                 参数个数无限制，不过需要保证第一位参数为需要执行的自定义函数名称  
               */  
             使用trigger('functionName',@data,$event),触发编写的js函数  

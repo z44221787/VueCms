@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script type="text/javascript" src="/src/lib/jquery-1.8/jquery.js"></script>
+    <script type="text/javascript" src="/node_modules/avalon2/dist/avalon.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/uuid.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/promiseM.js"></script>
+    <script type="text/javascript" src="/src/lib/utils/Event.js"></script>
+    <script type="text/javascript" src="/src/lib/component/ms-content.test.js"></script>
+    <style>
+        /* 解决页面初始化加载出现花括号 */
+        .ms-controller {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <xmp ms-widget="{is:'ms-content',load:['loadPData'],events:['changeData']}">
+        <span> {{@data.num.length}}</span>
+        <ul>
+            <li zr-on-click="@trigger('changeView',@data)" zr-for="el in @data.num">{{@el}}_1</li>
+        </ul>
+        <template zr-widget="{is:'ms-content', events:['loadData']}">
+            {{@data.num.length}}
+            <ul zr-if="true">
+                <li zr-on-click="@trigger('emitEvent','子组件',@el,@data)" zr-for="el in @data.num">{{@el}}_2</li>
+            </ul>
+        </template>
+    </xmp>
+    <div>
+        <ul style="list-style: none">
+            <li style="float: left;padding: 2px"><a onclick="zEvent.emit('changeData','分页1','测试1');" href="#">[1]</a>
+            </li>
+            <li style="float: left;padding: 2px"><a onclick="zEvent.emit('changeData','分页2','测试2');" href="#">[2]</a>
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script>
+    // 模拟ajax预处理数据
+    var loadPData = function (e,ee) {
+        
+        window.setTimeout(function () {
+            // 异步加载到数据
+            e.resolve({
+                num: [458, 789]
+            });
+            zEvent.emit('loadData',ee,[458, 789]);
+        }, 1000);
+    }
+
+    // 加载子级组件数据
+    var loadData = function (pvm,data, ee) {
+        console.info('获取父级数据：' + data);
+        
+        ee.data={
+                num: ['2_458', '2_789', '2_889']
+        };
+      
+        // window.setTimeout(function () {
+        //     // 异步加载到数据
+        //     ee.resolve({
+        //         num: ['2_458', '2_789', '2_889']
+        //     });
+        // }, 1000);
+    }
+
+
+    // 组件内部模板语法更改dom域，无需借助消息事件,直接传递data即可 使用数据域data
+    var changeView = function (e) {
+        e.num = ['1_1', '2_2'];
+    }
+
+
+    // 组件之间或者 组件与外部函数之间通信，改变dom域 使用vm域
+    var emitEvent = function (e, ee,data) {
+        // 改变自己
+        data.num = ['3_458', '3_789', '3_889'];
+        // 改变父级
+        zEvent.emit('changeData', e, ee);
+    }
+
+    var changeData = function (e, ee, eee) {
+        // 完全实现组件通信自由
+        console.info(e);
+        console.info(ee);
+        console.info(eee);
+        eee.data.num = [e, ee];
+    }
+    // 组件之间或者 组件与外部函数之间通信，改变dom域
+</script>
+</html>
