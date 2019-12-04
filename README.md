@@ -10,9 +10,15 @@
 
 /* 解决页面初始化加载出现花括号 */  页面中写入样式    
 <style>  
-    .ms-controller {  
-        display: none;  
-    }  
+        xmp {
+            display: none;
+        }
+        .ms-controller {
+            display: none;
+        }
+        [ms-controller] {
+            display: none;
+        }
 </style>  
 
 一、数据组件注意事项---请仔细阅读理解（看例子理解 index.text.1.html）
