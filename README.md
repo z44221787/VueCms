@@ -162,6 +162,33 @@ avalon.filters.idsOp = function (obj)
 }  
 
 
+知识点补充
+众所周知,ms-attr是返回一个对象. 我们只想对其中的一个字段进行格式化. 比如我们要处理title. 那么就起名为title.
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="../dist/avalon.js"></script>
+        <script>
+            avalon.filters.title = function (obj, a, b) {
+                var title = obj.title
+                var newTitle = avalon.filters.truncate(title, a, b)
+                obj.title = newTitle
+                return obj
+            }
+            var vm = avalon.define({
+                $id: 'test',
+                el: '123456789qwert'
+            })
+
+        </script>
+    </head>
+    <body ms-controller="test">
+        <div ms-attr="{title:@el} | title(10,'...')">333</div>
+    </body>
+</html>
+
+
 六、 自定义组件 --请按照基本格式编写
 
 
